@@ -8,30 +8,31 @@ import java.awt.Graphics2D;
 import javax.swing.JPanel;
 
 import entity.Player;
+import game.GameConfig;
 
 public class GamePanel extends JPanel implements Runnable{
 //SCREEN SETTINGS
 	
-	final int orTileSize = 16;
-	final int scale = 3;
+	final int orTileSize = GameConfig.orTileSize ;
+	final int scale = GameConfig.scale;
 	
-	public int tileSize = orTileSize * scale;
-	final int maxScreenCol = 35	;
-	final int maxScreenRow = 20 ;
-	final int screenWidth = tileSize * maxScreenCol;
-	final int screenHeight = tileSize * maxScreenRow;
+	public int tileSize = GameConfig.tileSize;
+	final int maxScreenCol = GameConfig.maxScreenCol;
+	final int maxScreenRow = GameConfig.maxScreenRow;
+	final int screenWidth = GameConfig.screenWidth;
+	final int screenHeight = GameConfig.screenHeight;
 	
 	//FPS
-	int fps = 60;
+	int fps = GameConfig.fps;
 	
 	KeyHandler keyH = new KeyHandler();
 	Thread gameThread;
 	Player player = new Player(this,keyH);
 	
 	//set players default position
-	int playerX = 100;
-	int playerY = 100;
-	int playerSpeed = 7;
+	private int playerX = GameConfig.playerX;
+	private int playerY = GameConfig.playerY;
+	private int playerSpeed = GameConfig.playerSpeed;
 	
 	public GamePanel() {
 		
