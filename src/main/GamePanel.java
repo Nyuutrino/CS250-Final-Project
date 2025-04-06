@@ -2,11 +2,13 @@ package main;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
+import barrier.Hallway;
 import entity.Player;
 import game.GameConfig;
 
@@ -28,6 +30,8 @@ public class GamePanel extends JPanel implements Runnable{
 	KeyHandler keyH = new KeyHandler();
 	Thread gameThread;
 	Player player = new Player(this,keyH);
+	//Test
+	Hallway testHall = new Hallway(10, 10, 5, 3);
 	
 	//set players default position
 	private int playerX = GameConfig.playerX;
@@ -81,7 +85,7 @@ public class GamePanel extends JPanel implements Runnable{
 			}
 			
 			if (timer >= 1000000000) {
-				System.out.println("FPS: " + drawCount);
+//				System.out.println("FPS: " + drawCount);
 				drawCount = 0;
 				timer = 0;
 			}
@@ -100,6 +104,11 @@ public class GamePanel extends JPanel implements Runnable{
 		Graphics2D g2 = (Graphics2D)g;
 		
 		player.draw(g2);
+		testHall.draw(g2);
+		if(!testHall.inBounds(player.x, player.y)) {
+			g2.setFont(new Font("Tahoe", Font.BOLD, 14));
+			g2.drawString("Player out of bounds!", 10, 10);
+		}
 		
 		g2.dispose();
 		
