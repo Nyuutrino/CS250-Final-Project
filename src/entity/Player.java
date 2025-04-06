@@ -1,6 +1,7 @@
 package entity;
 
 import java.awt.Color;
+
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -11,7 +12,9 @@ import javax.imageio.ImageIO;
 import main.GamePanel;
 import main.KeyHandler;
 
-public class Player extends Entity {
+import game.Drawable;
+
+public class Player extends Entity implements Drawable{
 	
 	//Class specifically for player entity, further actions only the player will do will be here
 	
