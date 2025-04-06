@@ -2,7 +2,7 @@ package entity;
 
 import java.awt.image.BufferedImage;
 
-public class entity {
+public class Entity {
 	
 	
 	public int x,y;

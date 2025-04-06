@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 import main.GamePanel;
 import main.KeyHandler;
 
-public class Player extends entity {
+public class Player extends Entity {
 	
 	//Class specifically for player entity, further actions only the player will do will be here
 	
