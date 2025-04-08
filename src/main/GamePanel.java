@@ -8,7 +8,10 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
+import barrier.Corner;
+import barrier.FourWay;
 import barrier.Hallway;
+import direction.Direction;
 import entity.Player;
 import game.GameConfig;
 
@@ -31,7 +34,7 @@ public class GamePanel extends JPanel implements Runnable{
 	Thread gameThread;
 	Player player = new Player(this,keyH);
 	//Test
-	Hallway testHall = new Hallway(10, 10, 5, 3);
+	Hallway testHall = new Hallway(10, 5, 5, new Direction(Direction.EAST));
 	
 	//set players default position
 	private int playerX = GameConfig.playerX;
