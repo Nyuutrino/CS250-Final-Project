@@ -18,5 +18,5 @@ public interface Collidable {
 	 * @param y the y coordinate to check
 	 * @return true if in bounds, false otherwise.
 	 */
-	public boolean inBounds(int x, int y);
+	public boolean inBounds(int objX, int objY);
 }
