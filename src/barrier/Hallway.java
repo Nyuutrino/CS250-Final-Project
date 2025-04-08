@@ -18,94 +18,108 @@ import game.GameConfig;
 /**
  * 
  */
-public class Hallway extends Barrier {
-	//Length of the hallway
+public class Hallway extends Barrier implements Nodes {
+	// Length of the hallway
 	private int len;
-	//Thickness of the hallway border lines when drawn
+	// Thickness of the hallway border lines when drawn
 	private final int thickness = 2;
-	//How many tiles wide the hallway is
+	// How many tiles wide the hallway is
 	private final int tileWidth = 2;
-	//Hallway border color
+	// Hallway border color
 	private Color color = Color.white;
-	
+	// Nodes that the hallway can have barriers attached to. In this case
+	// we only have one (there are two ways to move in/out, and one is
+	// already taken)
+	private Node node;
+
 	/**
 	 * @param tileX defined in super
 	 * @param tileY defined in super
-	 * @param len The length of the hallway. Defined as the number of tiles the hallway extends to.
-	 * @param dir defined in super
+	 * @param len   The length of the hallway. Defined as the number of tiles the
+	 *              hallway extends to.
+	 * @param dir   defined in super
 	 */
 	public Hallway(int tileX, int tileY, int len, Direction dir) {
 		super(tileX, tileY, dir);
 		this.len = len;
-		
+		// Initialize available node. This will depend on what direction the hallway is
+		// If north, we will have a north node (south node is already taken), if east we
+		// will have an east node (west node is already taken), etc
+		node = new Node(dir);
+
 	}
 
 	public boolean inBounds(int objX, int objY) {
-		//Boundary checking is different depending on rotation
-		if(dir.getDirection() == Direction.NORTH) {
-			//North
-			//It's outside of the x-axis boundary
+		// Boundary checking is different depending on rotation
+		if (dir.getDirection() == Direction.NORTH) {
+			// North
+			// It's outside of the x-axis boundary
 			if (objX < x - tileWidth * GameConfig.tileSize || objX > x)
 				return false;
-			//It's outside of the y-axis boundary
-			if(objY < y - len * GameConfig.tileSize || objY > y)
+			// It's outside of the y-axis boundary
+			if (objY < y - len * GameConfig.tileSize || objY > y)
 				return false;
 		}
 		if (dir.getDirection() == Direction.SOUTH) {
-			//South
-			//It's outside of the x-axis boundary
+			// South
+			// It's outside of the x-axis boundary
 			if (objX < x || objX > x + tileWidth * GameConfig.tileSize)
 				return false;
-			//It's outside of the y-axis boundary
-			if(objY < y || objY > y + len * GameConfig.tileSize)
+			// It's outside of the y-axis boundary
+			if (objY < y || objY > y + len * GameConfig.tileSize)
 				return false;
 		}
 		if (dir.getDirection() == Direction.EAST) {
-			//East
-			//It's outside of the x-axis boundary
+			// East
+			// It's outside of the x-axis boundary
 			if (objX < x || objX > x + len * GameConfig.tileSize)
 				return false;
-			//It's outside of the y-axis boundary
-			if(objY < y - tileWidth * GameConfig.tileSize || objY > y)
+			// It's outside of the y-axis boundary
+			if (objY < y - tileWidth * GameConfig.tileSize || objY > y)
 				return false;
 		}
 		if (dir.getDirection() == Direction.WEST) {
-			//West
-			//It's outside of the x-axis boundary
+			// West
+			// It's outside of the x-axis boundary
 			if (objX < x - len * GameConfig.tileSize || objX > x)
 				return false;
-			//It's outside of the y-axis boundary
-			if(objY < y || objY > y + tileWidth * GameConfig.tileSize)
-				return false;;
+			// It's outside of the y-axis boundary
+			if (objY < y || objY > y + tileWidth * GameConfig.tileSize)
+				return false;
+			;
 		}
-		//It's in bounds
+		// It's in bounds
 		return true;
 	}
-	
-	
-	public void draw(Graphics2D g2){
+
+	public void draw(Graphics2D g2) {
 		g2.setColor(color);
 		if (dir.getDirection() == Direction.NORTH) {
-			//North
-			g2.fillRect(x - (tileWidth * GameConfig.tileSize) - thickness, y - (len * GameConfig.tileSize), thickness, (len * GameConfig.tileSize));
+			// North
+			g2.fillRect(x - (tileWidth * GameConfig.tileSize) - thickness, y - (len * GameConfig.tileSize), thickness,
+					(len * GameConfig.tileSize));
 			g2.fillRect(x, y - (len * GameConfig.tileSize), thickness, (len * GameConfig.tileSize));
 		}
 		if (dir.getDirection() == Direction.SOUTH) {
-			//South
+			// South
 			g2.fillRect(x - thickness, y, thickness, len * GameConfig.tileSize);
 			g2.fillRect(x + (tileWidth * GameConfig.tileSize), y, thickness, len * GameConfig.tileSize);
 		}
 		if (dir.getDirection() == Direction.EAST) {
-			//East
+			// East
 			g2.fillRect(x, y, len * GameConfig.tileSize, thickness);
 			g2.fillRect(x, y - (tileWidth * GameConfig.tileSize) - thickness, len * GameConfig.tileSize, thickness);
 		}
 		if (dir.getDirection() == Direction.WEST) {
-			//West
+			// West
 			g2.fillRect(x - len * GameConfig.tileSize, y - thickness, len * GameConfig.tileSize, thickness);
-			g2.fillRect(x - len * GameConfig.tileSize, y + (tileWidth * GameConfig.tileSize), len * GameConfig.tileSize, thickness);
+			g2.fillRect(x - len * GameConfig.tileSize, y + (tileWidth * GameConfig.tileSize), len * GameConfig.tileSize,
+					thickness);
 		}
 	}
-	
+
+	public Node[] getAvailableNodes() {
+		return new Node[] { node };
+	}
 
 }
