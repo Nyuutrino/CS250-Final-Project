@@ -5,9 +5,9 @@
  */
 package barrier;
 
-import game.GameConfig;
 import direction.Direction;
 import game.Drawable;
+import game.GameConfig;
 
 
 
@@ -37,7 +37,14 @@ public abstract class Barrier implements Collidable, Drawable {
 		this.y = tileY * GameConfig.tileSize;
 		this.dir = dir;
 	}
-	
-	//TODO: define getters (& maybe setters)
+
+	/**
+	 * Gets the direction of the barrier
+	 * @return the barrier's direction
+	 */
+	public int getDirection() {
+		return dir.getDirection();
+	}
+
 
 }
