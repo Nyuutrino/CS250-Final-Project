@@ -22,14 +22,16 @@ public class Node {
 	 */
 	public Node(Direction dir) {
 		this.dir = dir;
-	};
+	}
 	
 	/**
 	 * Sets the barrier attached to the node
 	 * @param barrier the barrier that will be linked with the node
 	 */
 	public void setBarrier(Barrier barrier) {
-		//TODO: ensure barrier direction matches up with node direction
+		if (barrier.getDirection() != dir.getDirection()){
+			throw new IllegalArgumentException("Directions do not match! Expected '%d', got '%d'".formatted(dir.getDirection(), barrier.getDirection()));
+		}
 		this.barrierAttachment = barrier;
 	}
 
