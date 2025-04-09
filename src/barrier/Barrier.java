@@ -12,12 +12,12 @@ import game.Drawable;
 
 
 public abstract class Barrier implements Collidable, Drawable {
-	// The location of the upper-left part of the the barrier (what is "upper-left"
-	// is defined by each sub-class). The
+	// The location of the upper-left part of the barrier (what "upper-left" is
+	// defined by each sub-class). The
 	// barrier is aligned with the tile-layout of the game. Therefore, x and y
 	// represent x grid tiles over and y grid tiles down, respectively.
 	protected int tileX, tileY;
-	// Actual location of the upper-left part of the of the barrier.
+	// Actual location of the upper-left part of the barrier.
 	protected int x, y;
 	// Rotation of the barrier defined by direction. Use values defined in the Direction class
 	protected final Direction dir;
