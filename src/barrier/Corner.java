@@ -18,6 +18,7 @@ import game.GameConfig;
  * 
  */
 public class Corner extends Barrier implements Nodes {
+	//TODO: Corner only bends  left. Make a right-bending corner too
 
 	// Thickness of the hallway border lines when drawn
 	private final int thickness = 2;
