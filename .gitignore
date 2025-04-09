@@ -1,1 +1,8 @@
 /bin/
+# For Eclipse
+.settings
+.classpath
+.project
+# For Intellij IDEA
+.idea/
+classes/
