@@ -18,12 +18,15 @@ import game.GameConfig;
  * 
  */
 public class Corner extends Barrier implements Nodes {
-	//TODO: Corner only bends  left. Make a right-bending corner too
-
 	// Thickness of the hallway border lines when drawn
 	private final int thickness = 2;
 	// How many tiles wide the corner is
 	private final int tileWidth = 2;
+	//Bend direction. 0 for left & 1 for right. Use corner static variables when passing in the argument to the constructor for extra readability
+	private int bendDir = 0;
+	//Variables to make the left/right assignment more readable in constructor arguments
+	public static int LEFT = 0;
+	public static int RIGHT = 1;
 	// Bend border color
 	private Color color = Color.white;
 	// Nodes that the corner can have barriers attached to. In this case
@@ -36,11 +39,15 @@ public class Corner extends Barrier implements Nodes {
 	 * @param tileY defined in super
 	 * @param dir   defined in super
 	 */
-	public Corner(int tileX, int tileY, Direction dir) {
+	public Corner(int tileX, int tileY, Direction dir, int bendDir) {
 		super(tileX, tileY, dir);
 		// Initialize available node. In this case, it will be to the left of the
 		// entrance node's direction.
 		node = new Node(new Direction(Direction.left(dir.getDirection())));
+		if (bendDir != LEFT && bendDir != RIGHT) {
+			throw new IllegalArgumentException("bendDir should have a value of '%d' or '%d'!".formatted(LEFT, RIGHT));
+		}
+		this.bendDir = bendDir;
 	}
 
 	@Override
@@ -91,24 +98,44 @@ public class Corner extends Barrier implements Nodes {
 		g2.setColor(color);
 		if (dir.getDirection() == Direction.NORTH) {
 			// North
-			g2.fillRect(x, y - tileWidth * GameConfig.tileSize, thickness, tileWidth * GameConfig.tileSize);
+			if (bendDir == LEFT){
+				g2.fillRect(x, y - tileWidth * GameConfig.tileSize, thickness, tileWidth * GameConfig.tileSize);
+			}
+			else {
+				g2.fillRect(x - tileWidth * GameConfig.tileSize - thickness, y - tileWidth * GameConfig.tileSize, thickness, tileWidth * GameConfig.tileSize);
+			}
 			g2.fillRect(x - tileWidth * GameConfig.tileSize, y - tileWidth * GameConfig.tileSize,
 					tileWidth * GameConfig.tileSize, thickness);
 		}
 		if (dir.getDirection() == Direction.SOUTH) {
 			// South
-			g2.fillRect(x - thickness, y, thickness, tileWidth * GameConfig.tileSize);
+			if (bendDir == LEFT){
+				g2.fillRect(x - thickness, y, thickness, tileWidth * GameConfig.tileSize);
+			}
+			else {
+				g2.fillRect(x + tileWidth * GameConfig.tileSize, y, thickness, tileWidth * GameConfig.tileSize);
+			}
 			g2.fillRect(x, y + tileWidth * GameConfig.tileSize, tileWidth * GameConfig.tileSize, thickness);
 		}
 		if (dir.getDirection() == Direction.EAST) {
 			// East
-			g2.fillRect(x, y, tileWidth * GameConfig.tileSize, thickness);
+			if (bendDir == LEFT){
+				g2.fillRect(x, y, tileWidth * GameConfig.tileSize, thickness);
+			}
+			else {
+				g2.fillRect(x, y - tileWidth * GameConfig.tileSize - thickness, tileWidth * GameConfig.tileSize, thickness);
+			}
 			g2.fillRect(x + tileWidth * GameConfig.tileSize, y - tileWidth * GameConfig.tileSize, thickness,
 					tileWidth * GameConfig.tileSize);
 		}
 		if (dir.getDirection() == Direction.WEST) {
 			// West
-			g2.fillRect(x - tileWidth * GameConfig.tileSize, y - thickness, tileWidth * GameConfig.tileSize, thickness);
+			if (bendDir == LEFT){
+				g2.fillRect(x - tileWidth * GameConfig.tileSize, y - thickness, tileWidth * GameConfig.tileSize, thickness);
+			}
+			else {
+				g2.fillRect(x - tileWidth * GameConfig.tileSize, y + tileWidth * GameConfig.tileSize, tileWidth * GameConfig.tileSize, thickness);
+			}
 			g2.fillRect(x - tileWidth * GameConfig.tileSize - thickness, y, thickness, tileWidth * GameConfig.tileSize);
 		}
 
