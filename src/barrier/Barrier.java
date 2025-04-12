@@ -22,14 +22,6 @@ public abstract class Barrier implements Collidable, Drawable {
 	// Rotation of the barrier defined by direction. Use values defined in the Direction class
 	protected final Direction dir;
 
-	/**
-	 * TODO: potentially have the system link to a previous node, such that we can
-	 * build onto the path without having to know the exact x-position for each
-	 * barrier type. E.g: add a straight hallway onto a t-split just by passing the
-	 * t-split to a new hallway constructor argument along with the side to connect,
-	 * which then calculates the x & y positions for us automatically. This will
-	 * also help a lot with automatic maze generation.
-	 */
 	public Barrier(int tileX, int tileY, Direction dir) {
 		this.tileX = tileX;
 		this.tileY = tileY;
