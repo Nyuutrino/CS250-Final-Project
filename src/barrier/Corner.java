@@ -104,7 +104,7 @@ public class Corner extends Barrier implements Nodes {
 			else {
 				g2.fillRect(x - tileWidth * GameConfig.tileSize - thickness, y - tileWidth * GameConfig.tileSize, thickness, tileWidth * GameConfig.tileSize);
 			}
-			g2.fillRect(x - tileWidth * GameConfig.tileSize, y - tileWidth * GameConfig.tileSize,
+			g2.fillRect(x - tileWidth * GameConfig.tileSize, y - tileWidth * GameConfig.tileSize - thickness,
 					tileWidth * GameConfig.tileSize, thickness);
 		}
 		if (dir.getDirection() == Direction.SOUTH) {
