@@ -6,8 +6,7 @@
  */
 package barrier;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.*;
 
 import barrierNodes.Node;
 import barrierNodes.Nodes;
@@ -27,6 +26,8 @@ public class Corner extends Barrier implements Nodes {
 	//Variables to make the left/right assignment more readable in constructor arguments
 	public static final int LEFT = 0;
 	public static final int RIGHT = 1;
+	//Walls of the corner (used for collision checking & drawing)
+	private Rectangle[] walls = new Rectangle[2];
 	// Bend border color
 	private Color color = Color.white;
 	// Nodes that the corner can have barriers attached to. In this case
@@ -35,12 +36,9 @@ public class Corner extends Barrier implements Nodes {
 	private Node node;
 
 	/**
-	 * @param tileX defined in super
-	 * @param tileY defined in super
-	 * @param dir   defined in super
+	 * Method for all of the code needed for setting up the hallway instance
 	 */
-	public Corner(int tileX, int tileY, Direction dir, int bendDir) {
-		super(tileX, tileY, dir);
+	private void cornerConstruct(int bendDir){
 		if (bendDir != LEFT && bendDir != RIGHT) {
 			throw new IllegalArgumentException("bendDir should have a value of '%d' or '%d'!".formatted(LEFT, RIGHT));
 		}
@@ -53,6 +51,58 @@ public class Corner extends Barrier implements Nodes {
 		else {
 			node = new Node(new Direction(Direction.right(dir.getDirection())));
 		}
+		//Initialize the walls
+		if (dir.getDirection() == Direction.NORTH) {
+			// North
+			if (bendDir == LEFT){
+				walls[0] = new Rectangle(x, y - tileWidth * GameConfig.tileSize, thickness, tileWidth * GameConfig.tileSize);
+			}
+			else {
+				walls[0] = new Rectangle(x - tileWidth * GameConfig.tileSize - thickness, y - tileWidth * GameConfig.tileSize, thickness, tileWidth * GameConfig.tileSize);
+			}
+			walls[1] = new Rectangle(x - tileWidth * GameConfig.tileSize, y - tileWidth * GameConfig.tileSize - thickness,
+					tileWidth * GameConfig.tileSize, thickness);
+		}
+		if (dir.getDirection() == Direction.SOUTH) {
+			// South
+			if (bendDir == LEFT){
+				walls[0] = new Rectangle(x - thickness, y, thickness, tileWidth * GameConfig.tileSize);
+			}
+			else {
+				walls[0] = new Rectangle(x + tileWidth * GameConfig.tileSize, y, thickness, tileWidth * GameConfig.tileSize);
+			}
+			walls[1] = new Rectangle(x, y + tileWidth * GameConfig.tileSize, tileWidth * GameConfig.tileSize, thickness);
+		}
+		if (dir.getDirection() == Direction.EAST) {
+			// East
+			if (bendDir == LEFT){
+				walls[0] = new Rectangle(x, y, tileWidth * GameConfig.tileSize, thickness);
+			}
+			else {
+				walls[0] = new Rectangle(x, y - tileWidth * GameConfig.tileSize - thickness, tileWidth * GameConfig.tileSize, thickness);
+			}
+			walls[1] = new Rectangle(x + tileWidth * GameConfig.tileSize, y - tileWidth * GameConfig.tileSize, thickness,
+					tileWidth * GameConfig.tileSize);
+		}
+		if (dir.getDirection() == Direction.WEST) {
+			// West
+			if (bendDir == LEFT){
+				walls[0] = new Rectangle(x - tileWidth * GameConfig.tileSize, y - thickness, tileWidth * GameConfig.tileSize, thickness);
+			}
+			else {
+				walls[0] = new Rectangle(x - tileWidth * GameConfig.tileSize, y + tileWidth * GameConfig.tileSize, tileWidth * GameConfig.tileSize, thickness);
+			}
+			walls[1] = new Rectangle(x - tileWidth * GameConfig.tileSize - thickness, y, thickness, tileWidth * GameConfig.tileSize);
+		}
+	}
+	/**
+	 * @param tileX defined in super
+	 * @param tileY defined in super
+	 * @param dir   defined in super
+	 */
+	public Corner(int tileX, int tileY, Direction dir, int bendDir) {
+		super(tileX, tileY, dir);
+		cornerConstruct(bendDir);
 	}
 
 	/**
@@ -62,18 +112,7 @@ public class Corner extends Barrier implements Nodes {
 	public <B extends Barrier & Nodes> Corner(B prevBarrier, Node targetNode, int bendDir) {
 		//Super needs to be the first statement in a constructor, so unfortunately it's going to look ugly like this
 		super(prevBarrier.getAttachmentPointTX(targetNode), prevBarrier.getAttachmentPointTY(targetNode), new Direction(targetNode.getDirection()));
-		if (bendDir != LEFT && bendDir != RIGHT) {
-			throw new IllegalArgumentException("bendDir should have a value of '%d' or '%d'!".formatted(LEFT, RIGHT));
-		}
-		this.bendDir = bendDir;
-		// Initialize available node. In this case, it will be to the left/right of the
-		// entrance node's direction (depending on the bend direction).
-		if (bendDir == LEFT){
-			node = new Node(new Direction(Direction.left(dir.getDirection())));
-		}
-		else {
-			node = new Node(new Direction(Direction.right(dir.getDirection())));
-		}
+		cornerConstruct(bendDir);
 	}
 
 	@Override
@@ -122,49 +161,8 @@ public class Corner extends Barrier implements Nodes {
 	@Override
 	public void draw(Graphics2D g2) {
 		g2.setColor(color);
-		if (dir.getDirection() == Direction.NORTH) {
-			// North
-			if (bendDir == LEFT){
-				g2.fillRect(x, y - tileWidth * GameConfig.tileSize, thickness, tileWidth * GameConfig.tileSize);
-			}
-			else {
-				g2.fillRect(x - tileWidth * GameConfig.tileSize - thickness, y - tileWidth * GameConfig.tileSize, thickness, tileWidth * GameConfig.tileSize);
-			}
-			g2.fillRect(x - tileWidth * GameConfig.tileSize, y - tileWidth * GameConfig.tileSize - thickness,
-					tileWidth * GameConfig.tileSize, thickness);
-		}
-		if (dir.getDirection() == Direction.SOUTH) {
-			// South
-			if (bendDir == LEFT){
-				g2.fillRect(x - thickness, y, thickness, tileWidth * GameConfig.tileSize);
-			}
-			else {
-				g2.fillRect(x + tileWidth * GameConfig.tileSize, y, thickness, tileWidth * GameConfig.tileSize);
-			}
-			g2.fillRect(x, y + tileWidth * GameConfig.tileSize, tileWidth * GameConfig.tileSize, thickness);
-		}
-		if (dir.getDirection() == Direction.EAST) {
-			// East
-			if (bendDir == LEFT){
-				g2.fillRect(x, y, tileWidth * GameConfig.tileSize, thickness);
-			}
-			else {
-				g2.fillRect(x, y - tileWidth * GameConfig.tileSize - thickness, tileWidth * GameConfig.tileSize, thickness);
-			}
-			g2.fillRect(x + tileWidth * GameConfig.tileSize, y - tileWidth * GameConfig.tileSize, thickness,
-					tileWidth * GameConfig.tileSize);
-		}
-		if (dir.getDirection() == Direction.WEST) {
-			// West
-			if (bendDir == LEFT){
-				g2.fillRect(x - tileWidth * GameConfig.tileSize, y - thickness, tileWidth * GameConfig.tileSize, thickness);
-			}
-			else {
-				g2.fillRect(x - tileWidth * GameConfig.tileSize, y + tileWidth * GameConfig.tileSize, tileWidth * GameConfig.tileSize, thickness);
-			}
-			g2.fillRect(x - tileWidth * GameConfig.tileSize - thickness, y, thickness, tileWidth * GameConfig.tileSize);
-		}
-
+		g2.drawRect(walls[0].x, walls[0].y, walls[0].width, walls[0].height);
+		g2.drawRect(walls[1].x, walls[1].y, walls[1].width, walls[1].height);
 	}
 	
 	public Node[] getAvailableNodes() {
@@ -229,5 +227,9 @@ public class Corner extends Barrier implements Nodes {
 			}
 		}
 		return y;
+	}
+
+	public boolean isColliding(Rectangle rect) {
+		return walls[0].intersects(rect) || walls[1].intersects(rect);
 	}
 }

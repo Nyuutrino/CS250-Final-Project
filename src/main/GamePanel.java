@@ -1,13 +1,10 @@
 package main;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 
 import javax.swing.JPanel;
 
+import barrier.Barrier;
 import barrier.Corner;
 import barrier.FourWay;
 import barrier.Hallway;
@@ -34,6 +31,8 @@ public class GamePanel extends JPanel implements Runnable{
 	Thread gameThread;
 	Player player = new Player(this,keyH);
 	//Test
+	public Barrier[] barriers;
+	Rectangle playerRect = new Rectangle(player.x, player.y, tileSize, tileSize);
 	Hallway testHall = new Hallway(15, 5, 5, new Direction(Direction.SOUTH));
 	Hallway testHall2 = new Hallway(testHall, testHall.getAvailableNodes()[0], 5);
 	Corner testCorner = new Corner(testHall2, testHall2.getAvailableNodes()[0], Corner.RIGHT);
@@ -58,6 +57,7 @@ public class GamePanel extends JPanel implements Runnable{
 		testCorner.getAvailableNodes()[0].setBarrier(testHall3);
 		testHall3.getAvailableNodes()[0].setBarrier(testFW);
 		testFW.getAvailableNodes()[2].setBarrier(testHall4);
+		barriers = new Barrier[]{testHall, testHall2, testCorner, testHall3, testFW, testHall4};
 	}
 	
 	public void startGameThread() {
@@ -106,6 +106,8 @@ public class GamePanel extends JPanel implements Runnable{
 	public void update() {
 		
 		player.update();
+		playerRect.x = player.x;
+		playerRect.y = player.y;
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -120,10 +122,16 @@ public class GamePanel extends JPanel implements Runnable{
 		testHall3.draw(g2);
 		testFW.draw(g2);
 		testHall4.draw(g2);
-		if(!testHall.inBounds(player.x, player.y)) {
-			g2.setFont(new Font("Tahoe", Font.BOLD, 14));
-			g2.drawString("Player out of bounds!", 10, 10);
+		for (Barrier b : barriers){
+			if (b.isColliding(playerRect)){
+				g2.setFont(new Font("Tahoe", Font.BOLD, 14));
+				g2.drawString("Player is colliding!", 10, 10);
+			}
 		}
+//		if(!testHall.inBounds(player.x, player.y)) {
+//			g2.setFont(new Font("Tahoe", Font.BOLD, 14));
+//			g2.drawString("Player out of bounds!", 10, 10);
+//		}
 		
 		g2.dispose();
 		

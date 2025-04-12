@@ -6,9 +6,7 @@
  */
 package barrier;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.util.Arrays;
+import java.awt.*;
 
 import barrierNodes.Node;
 import barrierNodes.Nodes;
@@ -25,6 +23,8 @@ public class Hallway extends Barrier implements Nodes {
 	private final int thickness = 2;
 	// How many tiles wide the hallway is
 	private final int tileWidth = 2;
+	//Walls of the hallway (used for collision checking & drawing)
+	private Rectangle[] walls = new Rectangle[2];
 	// Hallway border color
 	private Color color = Color.white;
 	// Nodes that the hallway can have barriers attached to. In this case
@@ -32,6 +32,38 @@ public class Hallway extends Barrier implements Nodes {
 	// already taken)
 	private Node node;
 
+	/**
+	 * Method for all of the code needed for setting up the hallway instance
+	 */
+	private void hallwayConstruct(int len){
+		this.len = len;
+		// Initialize available node. This will depend on what direction the hallway is
+		// If north, we will have a north node (south node is already taken), if east we
+		// will have an east node (west node is already taken), etc
+		node = new Node(dir);
+		//Initialize the walls
+		if (dir.getDirection() == Direction.NORTH) {
+			// North
+			walls[0] = new Rectangle(x - (tileWidth * GameConfig.tileSize) - thickness, y - (len * GameConfig.tileSize), thickness, len * GameConfig.tileSize);
+			walls[1] = new Rectangle(x, y - (len * GameConfig.tileSize), thickness, (len * GameConfig.tileSize));
+		}
+		if (dir.getDirection() == Direction.SOUTH) {
+			// South
+			walls[0] = new Rectangle(x - thickness, y, thickness, len * GameConfig.tileSize);
+			walls[1] = new Rectangle(x + (tileWidth * GameConfig.tileSize), y, thickness, len * GameConfig.tileSize);
+		}
+		if (dir.getDirection() == Direction.EAST) {
+			// East
+			walls[0] = new Rectangle(x, y, len * GameConfig.tileSize, thickness);
+			walls[1] = new Rectangle(x, y - (tileWidth * GameConfig.tileSize) - thickness, len * GameConfig.tileSize, thickness);
+		}
+		if (dir.getDirection() == Direction.WEST) {
+			// West
+			walls[0] = new Rectangle(x - len * GameConfig.tileSize, y - thickness, len * GameConfig.tileSize, thickness);
+			walls[1] = new Rectangle(x - len * GameConfig.tileSize, y + (tileWidth * GameConfig.tileSize), len * GameConfig.tileSize,
+					thickness);
+		}
+	}
 	/**
 	 * @param tileX defined in super
 	 * @param tileY defined in super
@@ -41,11 +73,7 @@ public class Hallway extends Barrier implements Nodes {
 	 */
 	public Hallway(int tileX, int tileY, int len, Direction dir) {
 		super(tileX, tileY, dir);
-		this.len = len;
-		// Initialize available node. This will depend on what direction the hallway is
-		// If north, we will have a north node (south node is already taken), if east we
-		// will have an east node (west node is already taken), etc
-		node = new Node(dir);
+		hallwayConstruct(len);
 	}
 
 	/**
@@ -55,11 +83,7 @@ public class Hallway extends Barrier implements Nodes {
 	public <B extends Barrier & Nodes> Hallway(B prevBarrier, Node targetNode, int len) {
 		//Super needs to be the first statement in a constructor, so unfortunately it's going to look ugly like this
 		super(prevBarrier.getAttachmentPointTX(targetNode), prevBarrier.getAttachmentPointTY(targetNode), new Direction(targetNode.getDirection()));
-		this.len = len;
-		// Initialize available node. This will depend on what direction the hallway is
-		// If north, we will have a north node (south node is already taken), if east we
-		// will have an east node (west node is already taken), etc
-		node = new Node(dir);
+		hallwayConstruct(len);
 	}
 
 	public boolean inBounds(int objX, int objY) {
@@ -107,28 +131,8 @@ public class Hallway extends Barrier implements Nodes {
 
 	public void draw(Graphics2D g2) {
 		g2.setColor(color);
-		if (dir.getDirection() == Direction.NORTH) {
-			// North
-			g2.fillRect(x - (tileWidth * GameConfig.tileSize) - thickness, y - (len * GameConfig.tileSize), thickness,
-					(len * GameConfig.tileSize));
-			g2.fillRect(x, y - (len * GameConfig.tileSize), thickness, (len * GameConfig.tileSize));
-		}
-		if (dir.getDirection() == Direction.SOUTH) {
-			// South
-			g2.fillRect(x - thickness, y, thickness, len * GameConfig.tileSize);
-			g2.fillRect(x + (tileWidth * GameConfig.tileSize), y, thickness, len * GameConfig.tileSize);
-		}
-		if (dir.getDirection() == Direction.EAST) {
-			// East
-			g2.fillRect(x, y, len * GameConfig.tileSize, thickness);
-			g2.fillRect(x, y - (tileWidth * GameConfig.tileSize) - thickness, len * GameConfig.tileSize, thickness);
-		}
-		if (dir.getDirection() == Direction.WEST) {
-			// West
-			g2.fillRect(x - len * GameConfig.tileSize, y - thickness, len * GameConfig.tileSize, thickness);
-			g2.fillRect(x - len * GameConfig.tileSize, y + (tileWidth * GameConfig.tileSize), len * GameConfig.tileSize,
-					thickness);
-		}
+		g2.fillRect(walls[0].x, walls[0].y, walls[0].width, walls[0].height);
+		g2.fillRect(walls[1].x, walls[1].y, walls[1].width, walls[1].height);
 	}
 
 	public Node[] getAvailableNodes() {
@@ -171,4 +175,7 @@ public class Hallway extends Barrier implements Nodes {
 		return y;
 	}
 
+	public boolean isColliding(Rectangle rect) {
+		return walls[0].intersects(rect) || walls[1].intersects(rect);
+	}
 }

@@ -6,7 +6,7 @@
  */
 package barrier;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 
 import barrierNodes.Node;
 import barrierNodes.Nodes;
@@ -25,37 +25,9 @@ public class FourWay extends Barrier implements Nodes {
 	private Node[] nodes;
 
 	/**
-	 * @param tileX defined in super
-	 * @param tileY defined in super
+	 * Method for all of the code needed for setting up the hallway instance
 	 */
-	public FourWay(int tileX, int tileY, Direction dir) {
-		super(tileX, tileY, dir);
-		// Initialize available nodes. We basically add all but the opposite direction
-		// of the direction it is facing (e.g: if the direction is north, the south side
-		// will be the entrance, so exclude that
-		switch (dir.getDirection()) {
-		case Direction.NORTH:
-			nodes = new Node[] {new Node(new Direction(Direction.NORTH)), new Node(new Direction(Direction.EAST)), new Node(new Direction(Direction.WEST))};
-			break;
-		case Direction.SOUTH:
-			nodes = new Node[] {new Node(new Direction(Direction.SOUTH)), new Node(new Direction(Direction.EAST)), new Node(new Direction(Direction.WEST))};
-			break;
-		case Direction.EAST:
-			nodes = new Node[] {new Node(new Direction(Direction.NORTH)), new Node(new Direction(Direction.SOUTH)), new Node(new Direction(Direction.EAST))};
-			break;
-		case Direction.WEST:
-			nodes = new Node[] {new Node(new Direction(Direction.NORTH)), new Node(new Direction(Direction.SOUTH)), new Node(new Direction(Direction.WEST))};
-			break;
-		}
-	}
-
-	/**
-	 * Allows initializing a new four-way so that it will append onto a node of another barrier
-	 */
-	//Make sure the object is both a barrier & implements the node interface
-	public <B extends Barrier & Nodes> FourWay(B prevBarrier, Node targetNode) {
-		//Super needs to be the first statement in a constructor, so unfortunately it's going to look ugly like this
-		super(prevBarrier.getAttachmentPointTX(targetNode), prevBarrier.getAttachmentPointTY(targetNode), new Direction(targetNode.getDirection()));
+	private void fourWayConstruct(){
 		// Initialize available nodes. We basically add all but the opposite direction
 		// of the direction it is facing (e.g: if the direction is north, the south side
 		// will be the entrance, so exclude that
@@ -73,6 +45,24 @@ public class FourWay extends Barrier implements Nodes {
 				nodes = new Node[] {new Node(new Direction(Direction.NORTH)), new Node(new Direction(Direction.SOUTH)), new Node(new Direction(Direction.WEST))};
 				break;
 		}
+	}
+	/**
+	 * @param tileX defined in super
+	 * @param tileY defined in super
+	 */
+	public FourWay(int tileX, int tileY, Direction dir) {
+		super(tileX, tileY, dir);
+		fourWayConstruct();
+	}
+
+	/**
+	 * Allows initializing a new four-way so that it will append onto a node of another barrier
+	 */
+	//Make sure the object is both a barrier & implements the node interface
+	public <B extends Barrier & Nodes> FourWay(B prevBarrier, Node targetNode) {
+		//Super needs to be the first statement in a constructor, so unfortunately it's going to look ugly like this
+		super(prevBarrier.getAttachmentPointTX(targetNode), prevBarrier.getAttachmentPointTY(targetNode), new Direction(targetNode.getDirection()));
+		fourWayConstruct();
 	}
 	@Override
 	public boolean inBounds(int objX, int objY) {
@@ -210,4 +200,8 @@ public class FourWay extends Barrier implements Nodes {
 		return y;
 	}
 
+	public boolean isColliding(Rectangle rect) {
+		//Always return false (since there are no walls to collide with)
+		return false;
+	}
 }
