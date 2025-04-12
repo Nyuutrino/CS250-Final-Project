@@ -32,6 +32,14 @@ public class Direction {
 	}
 
 	/**
+	 * Instantiates a Direction class instance
+	 *
+	 * @param direction The direction of the class. Uses a pre-existing direction class instead of the integer variables
+	 */
+	public Direction(Direction direction) {
+		this.dir = direction.getDirection();
+	}
+	/**
 	 * Gets direction
 	 * 
 	 * @return the direction
