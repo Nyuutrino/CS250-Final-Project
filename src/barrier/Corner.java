@@ -41,13 +41,18 @@ public class Corner extends Barrier implements Nodes {
 	 */
 	public Corner(int tileX, int tileY, Direction dir, int bendDir) {
 		super(tileX, tileY, dir);
-		// Initialize available node. In this case, it will be to the left of the
-		// entrance node's direction.
-		node = new Node(new Direction(Direction.left(dir.getDirection())));
 		if (bendDir != LEFT && bendDir != RIGHT) {
 			throw new IllegalArgumentException("bendDir should have a value of '%d' or '%d'!".formatted(LEFT, RIGHT));
 		}
 		this.bendDir = bendDir;
+		// Initialize available node. In this case, it will be to the left/right of the
+		// entrance node's direction (depending on the bend direction).
+		if (bendDir == LEFT){
+			node = new Node(new Direction(Direction.left(dir.getDirection())));
+		}
+		else {
+			node = new Node(new Direction(Direction.right(dir.getDirection())));
+		}
 	}
 
 	@Override
