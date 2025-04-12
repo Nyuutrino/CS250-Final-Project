@@ -46,5 +46,38 @@ public abstract class Barrier implements Collidable, Drawable {
 		return dir.getDirection();
 	}
 
+	/**
+	 * Returns the tileX location
+	 * @return tileX
+	 */
+	public int getTileX(){
+		return tileX;
+	}
+
+	/**
+	 * Returns the tileY location
+	 * @return tileY
+	 */
+	public int getTileY(){
+		return tileY;
+	}
+
+	/**
+	 * Returns the x location
+	 * @return x
+	 */
+	public int getX(){
+		return x;
+	}
+
+	/**
+	 * Returns the y location
+	 * @return y
+	 */
+	public int getY(){
+		return y;
+	}
+
+
 
 }
