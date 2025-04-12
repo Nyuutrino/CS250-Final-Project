@@ -14,4 +14,16 @@ public interface Nodes {
 	 * @return an array of nodes
 	 */
 	public Node[] getAvailableNodes();
+
+	/**
+	 * Gets where the attachment point's tileX coordinate should be for the next barrier at a specified node
+	 * @return the tileX coordinate of the attachment point
+	 */
+	public int getAttachmentPointTX(Node targetNode);
+
+	/**
+	 * Gets where the attachment point's tileY coordinate should be for the next barrier at a specified node
+	 * @return the tileY coordinate of the attachment point
+	 */
+	public int getAttachmentPointTY(Node targetNode);
 }

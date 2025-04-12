@@ -55,6 +55,27 @@ public class Corner extends Barrier implements Nodes {
 		}
 	}
 
+	/**
+	 * Allows initializing a new corner so that it will append onto a node of another barrier
+	 */
+	//Make sure the object is both a barrier & implements the node interface
+	public <B extends Barrier & Nodes> Corner(B prevBarrier, Node targetNode, int bendDir) {
+		//Super needs to be the first statement in a constructor, so unfortunately it's going to look ugly like this
+		super(prevBarrier.getAttachmentPointTX(targetNode), prevBarrier.getAttachmentPointTY(targetNode), new Direction(targetNode.getDirection()));
+		if (bendDir != LEFT && bendDir != RIGHT) {
+			throw new IllegalArgumentException("bendDir should have a value of '%d' or '%d'!".formatted(LEFT, RIGHT));
+		}
+		this.bendDir = bendDir;
+		// Initialize available node. In this case, it will be to the left/right of the
+		// entrance node's direction (depending on the bend direction).
+		if (bendDir == LEFT){
+			node = new Node(new Direction(Direction.left(dir.getDirection())));
+		}
+		else {
+			node = new Node(new Direction(Direction.right(dir.getDirection())));
+		}
+	}
+
 	@Override
 	public boolean inBounds(int objX, int objY) {
 		// Boundary checking is different depending on rotation
@@ -148,5 +169,65 @@ public class Corner extends Barrier implements Nodes {
 	
 	public Node[] getAvailableNodes() {
 		return new Node[] { node };
+	}
+
+	public int getAttachmentPointTX(Node targetNode) {
+		//Make sure the node is an instance this specific hallway class instance's node
+		if (targetNode != node) {
+			throw new IllegalArgumentException("Target node is not a valid node for this barrier type/instance!");
+		}
+		int x = tileX;
+		//X depends on the direction the node is facing
+		if (dir.getDirection() == Direction.NORTH){
+			if (bendDir == LEFT){
+				x -= tileWidth;
+			}
+		}
+		else if(dir.getDirection() == Direction.SOUTH){
+			if (bendDir == LEFT){
+				x += tileWidth;
+			}
+		}
+		else if(dir.getDirection() == Direction.EAST){
+			if (bendDir == LEFT){
+				x += tileWidth;
+			}
+		}
+		else if (dir.getDirection() == Direction.WEST){
+			if (bendDir == LEFT){
+				x -= tileWidth;
+			}
+		}
+		return x;
+	}
+
+	public int getAttachmentPointTY(Node targetNode) {
+		//Make sure the node is an instance this specific hallway class instance's node
+		if (targetNode != node) {
+			throw new IllegalArgumentException("Target node is not a valid node for this barrier type/instance!");
+		}
+		int y = tileY;
+		//Y depends on the direction the corner is facing & its bend
+		if (dir.getDirection() == Direction.NORTH) {
+			if (bendDir == LEFT){
+				y -= tileWidth;
+			}
+		}
+		else if(dir.getDirection() == Direction.SOUTH){
+			if (bendDir == LEFT){
+				y += tileWidth;
+			}
+		}
+		else if(dir.getDirection() == Direction.EAST){
+			if (bendDir == LEFT){
+				y -= tileWidth;
+			}
+		}
+		else if (dir.getDirection() == Direction.WEST){
+			if (bendDir == LEFT){
+				y += tileWidth;
+			}
+		}
+		return y;
 	}
 }

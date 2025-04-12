@@ -46,7 +46,20 @@ public class Hallway extends Barrier implements Nodes {
 		// If north, we will have a north node (south node is already taken), if east we
 		// will have an east node (west node is already taken), etc
 		node = new Node(dir);
+	}
 
+	/**
+	 * Allows initializing a new hallway so that it will append onto a node of another barrier
+	 */
+	//Make sure the object is both a barrier & implements the node interface
+	public <B extends Barrier & Nodes> Hallway(B prevBarrier, Node targetNode, int len) {
+		//Super needs to be the first statement in a constructor, so unfortunately it's going to look ugly like this
+		super(prevBarrier.getAttachmentPointTX(targetNode), prevBarrier.getAttachmentPointTY(targetNode), new Direction(targetNode.getDirection()));
+		this.len = len;
+		// Initialize available node. This will depend on what direction the hallway is
+		// If north, we will have a north node (south node is already taken), if east we
+		// will have an east node (west node is already taken), etc
+		node = new Node(dir);
 	}
 
 	public boolean inBounds(int objX, int objY) {
@@ -120,6 +133,42 @@ public class Hallway extends Barrier implements Nodes {
 
 	public Node[] getAvailableNodes() {
 		return new Node[] { node };
+	}
+
+	public int getAttachmentPointTX(Node targetNode) {
+		//Make sure the node is an instance this specific hallway class instance's node
+		if (targetNode != node) {
+			throw new IllegalArgumentException("Target node is not a valid node for this barrier type/instance!");
+		}
+		int x = tileX;
+		//X depends on the direction the hallway is facing
+		switch (dir.getDirection()) {
+			case Direction.EAST:
+				x += len;
+				break;
+			case Direction.WEST:
+				x -= len;
+				break;
+		}
+		return x;
+	}
+
+	public int getAttachmentPointTY(Node targetNode) {
+		//Make sure the node is an instance this specific hallway class instance's node
+		if (targetNode != node) {
+			throw new IllegalArgumentException("Target node is not a valid node for this barrier type/instance!");
+		}
+		int y = tileY;
+		//Y depends on the direction the hallway is facing
+		switch (dir.getDirection()) {
+			case Direction.NORTH:
+				y -= len;
+				break;
+			case Direction.SOUTH:
+				y += len;
+				break;
+		}
+		return y;
 	}
 
 }

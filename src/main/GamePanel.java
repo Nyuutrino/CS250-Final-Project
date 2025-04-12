@@ -34,7 +34,12 @@ public class GamePanel extends JPanel implements Runnable{
 	Thread gameThread;
 	Player player = new Player(this,keyH);
 	//Test
-	Hallway testHall = new Hallway(10, 5, 5, new Direction(Direction.EAST));
+	Hallway testHall = new Hallway(15, 5, 5, new Direction(Direction.SOUTH));
+	Hallway testHall2 = new Hallway(testHall, testHall.getAvailableNodes()[0], 5);
+	Corner testCorner = new Corner(testHall2, testHall2.getAvailableNodes()[0], Corner.RIGHT);
+	Hallway testHall3 = new Hallway(testCorner, testCorner.getAvailableNodes()[0], 5);
+	FourWay testFW = new FourWay(testHall3, testHall3.getAvailableNodes()[0]);
+	Hallway testHall4 = new Hallway(testFW, testFW.getAvailableNodes()[2], 5);
 	
 	//set players default position
 	private int playerX = GameConfig.playerX;
@@ -48,9 +53,11 @@ public class GamePanel extends JPanel implements Runnable{
 		this.setDoubleBuffered(true);
 		this.addKeyListener(keyH);
 		this.setFocusable(true);
-		
-		
-		
+		testHall.getAvailableNodes()[0].setBarrier(testHall2);
+		testHall2.getAvailableNodes()[0].setBarrier(testCorner);
+		testCorner.getAvailableNodes()[0].setBarrier(testHall3);
+		testHall3.getAvailableNodes()[0].setBarrier(testFW);
+		testFW.getAvailableNodes()[2].setBarrier(testHall4);
 	}
 	
 	public void startGameThread() {
@@ -108,6 +115,11 @@ public class GamePanel extends JPanel implements Runnable{
 		
 		player.draw(g2);
 		testHall.draw(g2);
+		testHall2.draw(g2);
+		testCorner.draw(g2);
+		testHall3.draw(g2);
+		testFW.draw(g2);
+		testHall4.draw(g2);
 		if(!testHall.inBounds(player.x, player.y)) {
 			g2.setFont(new Font("Tahoe", Font.BOLD, 14));
 			g2.drawString("Player out of bounds!", 10, 10);
