@@ -35,4 +35,20 @@ public class Node {
 		this.barrierAttachment = barrier;
 	}
 
+	/**
+	 * Gets the direction of the node
+	 * @return the direction class of the node
+	 */
+	public Direction getDirection() {
+		return this.dir;
+	}
+
+	/**
+	 * Gets the direction of the node as an integer
+	 * @return the direction integer of the node
+	 */
+	public int getDirectionInt(){
+		return this.dir.getDirection();
+	}
+
 }
