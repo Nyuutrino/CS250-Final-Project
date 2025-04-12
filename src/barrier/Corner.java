@@ -25,8 +25,8 @@ public class Corner extends Barrier implements Nodes {
 	//Bend direction. 0 for left & 1 for right. Use corner static variables when passing in the argument to the constructor for extra readability
 	private int bendDir = 0;
 	//Variables to make the left/right assignment more readable in constructor arguments
-	public static int LEFT = 0;
-	public static int RIGHT = 1;
+	public static final int LEFT = 0;
+	public static final int RIGHT = 1;
 	// Bend border color
 	private Color color = Color.white;
 	// Nodes that the corner can have barriers attached to. In this case
