@@ -20,7 +20,7 @@ public class ThreeWay extends Barrier implements Nodes{
     // Three way border color
     private Color color = Color.white;
     // Thickness of the three way border lines when drawn
-    private final int thickness = 10;
+    private final int thickness = 2;
     // Nodes of the three way. We have three - one for each side.
     //The order will be the opposite of the direction of the three way (the inlet),
     //The direction left of the opposite (left of the inlet),
