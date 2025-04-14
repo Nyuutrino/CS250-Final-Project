@@ -21,8 +21,8 @@ public class FourWay extends Barrier implements Nodes {
 	private final int tileWidth = 1;
 	// Nodes of the four way. We have four - one for each side.
 	//The order will be the opposite of the direction of the four way (the inlet),
-	//The direction of the four way (across from the inlet)
-	//The direction left of the opposite (left of the inlet)
+	//The direction of the four way (across from the inlet),
+	//The direction left of the opposite (left of the inlet),
 	//The direction right of the opposite (right of the inlet)
 	private Node[] nodes = new Node[4];
 
