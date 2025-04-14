@@ -128,49 +128,6 @@ public class Corner extends Barrier implements Nodes {
 	}
 
 	@Override
-	public boolean inBounds(int objX, int objY) {
-		// Boundary checking is different depending on rotation
-		if (dir.getDirection() == Direction.NORTH) {
-			// North
-			// Outside of x-axis boundary
-			if (objX < x - tileWidth * GameConfig.tileSize || objX > x)
-				return false;
-			// Outside of the y-axis boundary
-			if (objY < y - tileWidth * GameConfig.tileSize || objY > y)
-				return false;
-		}
-		if (dir.getDirection() == Direction.SOUTH) {
-			// South
-			// Outside of x-axis boundary
-			if (objX < x || objX > x + tileWidth * GameConfig.tileSize)
-				return false;
-			// Outside of the y-axis boundary
-			if (objY < y || objY > y + tileWidth * GameConfig.tileSize)
-				return false;
-		}
-		if (dir.getDirection() == Direction.EAST) {
-			// East
-			// Outside of x-axis boundary
-			if (objX < x || objX > x + tileWidth * GameConfig.tileSize)
-				return false;
-			// Outside of the y-axis boundary
-			if (objY < y - tileWidth * GameConfig.tileSize || objY > y)
-				return false;
-		}
-		if (dir.getDirection() == Direction.WEST) {
-			// West
-			// Outside of x-axis boundary
-			if (objX < x - tileWidth * GameConfig.tileSize || objX > x)
-				return false;
-			// Outside of the y-axis boundary
-			if (objY < y || objY > y + tileWidth * GameConfig.tileSize)
-				return false;
-		}
-		// It's in bounds
-		return true;
-	}
-
-	@Override
 	public void draw(Graphics2D g2) {
 		//Walls
 		g2.setColor(color);

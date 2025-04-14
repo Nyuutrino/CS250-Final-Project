@@ -93,48 +93,6 @@ public class Hallway extends Barrier implements Nodes {
 		hallwayConstruct(len);
 	}
 
-	public boolean inBounds(int objX, int objY) {
-		// Boundary checking is different depending on rotation
-		if (dir.getDirection() == Direction.NORTH) {
-			// North
-			// It's outside of the x-axis boundary
-			if (objX < x - tileWidth * GameConfig.tileSize || objX > x)
-				return false;
-			// It's outside of the y-axis boundary
-			if (objY < y - len * GameConfig.tileSize || objY > y)
-				return false;
-		}
-		if (dir.getDirection() == Direction.SOUTH) {
-			// South
-			// It's outside of the x-axis boundary
-			if (objX < x || objX > x + tileWidth * GameConfig.tileSize)
-				return false;
-			// It's outside of the y-axis boundary
-			if (objY < y || objY > y + len * GameConfig.tileSize)
-				return false;
-		}
-		if (dir.getDirection() == Direction.EAST) {
-			// East
-			// It's outside of the x-axis boundary
-			if (objX < x || objX > x + len * GameConfig.tileSize)
-				return false;
-			// It's outside of the y-axis boundary
-			if (objY < y - tileWidth * GameConfig.tileSize || objY > y)
-				return false;
-		}
-		if (dir.getDirection() == Direction.WEST) {
-			// West
-			// It's outside of the x-axis boundary
-			if (objX < x - len * GameConfig.tileSize || objX > x)
-				return false;
-			// It's outside of the y-axis boundary
-			if (objY < y || objY > y + tileWidth * GameConfig.tileSize)
-				return false;
-		}
-		// It's in bounds
-		return true;
-	}
-
 	public void draw(Graphics2D g2) {
 		//TODO: Arrows representing direction?
 		//Walls
