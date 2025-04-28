@@ -1,10 +1,9 @@
 /**
  * Author: Nyuutrino
  * Date: Apr 6, 2025
- * Description: Defines the class Node, used for pointing to the next barrier from a given barrier in a specified direction.
+ * Description: Defines the class Node, used for pointing to the next corridor from a given corridor in a specified direction.
  */
 package barrierNodes;
-import barrier.Barrier;
 import direction.Direction;
 import game.GameConfig;
 
@@ -19,8 +18,8 @@ public class Node {
 	protected final int nodeTY;
 	protected final int nodeX;
 	protected final int nodeY;
-	//The barrier node attached to this node
-	protected Node barrierAttachmentNode;
+	//The corridor node attached to this node
+	protected Node corridorAttachmentNode;
 	
 	/**
 	 * Instantiates the node
@@ -35,18 +34,18 @@ public class Node {
 	}
 
 	/**
-	 * Links two nodes together from different barriers
-	 * @param barrierTargetNode the other barrier's target node that will be linked with the node
+	 * Links two nodes together from different corridors
+	 * @param targetNode the other corridor's target node that will be linked with the node
 	 */
-	public void linkNodes(Node barrierTargetNode) {
+	public void linkNodes(Node targetNode) {
 		//We allow directions from the same/opposite direction. However, we also need to make sure that the attachment points match
-		if (barrierTargetNode.getDirectionInt() != dir.getDirection() && barrierTargetNode.getDirectionInt() != Direction.opposite(dir.getDirection())){
-			throw new IllegalArgumentException("Directions not compatible! Expected '%d' or '%d', got '%d'.".formatted(dir.getDirection(), Direction.opposite(dir).getDirection(), barrierTargetNode.getDirectionInt()));
+		if (targetNode.getDirectionInt() != dir.getDirection() && targetNode.getDirectionInt() != Direction.opposite(dir.getDirection())){
+			throw new IllegalArgumentException("Directions not compatible! Expected '%d' or '%d', got '%d'.".formatted(dir.getDirection(), Direction.opposite(dir).getDirection(), targetNode.getDirectionInt()));
 		}
-		if (barrierTargetNode.getNodeX() != nodeX || barrierTargetNode.getNodeY() != nodeY){
-			throw new IllegalArgumentException("Node x and y locations do not match! Node to attach to has coordinates %d, %d, while node to be attached has coordinates %d, %d.".formatted(nodeX, nodeY, barrierTargetNode.getNodeX(), barrierTargetNode.getNodeY()));
+		if (targetNode.getNodeX() != nodeX || targetNode.getNodeY() != nodeY){
+			throw new IllegalArgumentException("Node x and y locations do not match! Node to attach to has coordinates %d, %d, while node to be attached has coordinates %d, %d.".formatted(nodeX, nodeY, targetNode.getNodeX(), targetNode.getNodeY()));
 		}
-		this.barrierAttachmentNode = barrierTargetNode;
+		this.corridorAttachmentNode = targetNode;
 	}
 
 	/**

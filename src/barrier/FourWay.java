@@ -8,14 +8,13 @@ package barrier;
 import java.awt.*;
 
 import barrierNodes.Node;
-import barrierNodes.Nodes;
 import direction.Direction;
 import game.GameConfig;
 
 /**
  * 
  */
-public class FourWay extends Barrier implements Nodes {
+public class FourWay extends Corridor {
 
 	// How many tiles wide the four way is from the center line. The total width will be 2n, where n is the tile width specified
 	private final int tileWidth = 1;
@@ -63,12 +62,11 @@ public class FourWay extends Barrier implements Nodes {
 	}
 
 	/**
-	 * Allows initializing a new four-way so that it will append onto a node of another barrier
+	 * Allows initializing a new four-way so that it will append onto a node of another corridor
 	 */
-	//Make sure the object is both a barrier & implements the node interface
-	public <B extends Barrier & Nodes> FourWay(B prevBarrier, Node targetNode) {
+	public FourWay(Corridor prevCorridor, Node targetNode) {
 		//Super needs to be the first statement in a constructor, so unfortunately it's going to look ugly like this
-		super(prevBarrier.getAttachmentPointTX(targetNode), prevBarrier.getAttachmentPointTY(targetNode), new Direction(targetNode.getDirection()));
+		super(prevCorridor.getAttachmentPointTX(targetNode), prevCorridor.getAttachmentPointTY(targetNode), new Direction(targetNode.getDirection()));
 		fourWayConstruct();
 	}
 
@@ -142,14 +140,14 @@ public class FourWay extends Barrier implements Nodes {
 
 	public int getAttachmentPointTX(Node targetNode) {
 		if (!nodeInstanceofClass(targetNode)) {
-			throw new IllegalArgumentException("Target node is not a valid node for this barrier type/instance!");
+			throw new IllegalArgumentException("Target node is not a valid node for this corridor type/instance!");
 		}
 		return targetNode.getNodeTX();
 	}
 
 	public int getAttachmentPointTY(Node targetNode) {
 		if (!nodeInstanceofClass(targetNode)) {
-			throw new IllegalArgumentException("Target node is not a valid node for this barrier type/instance!");
+			throw new IllegalArgumentException("Target node is not a valid node for this corridor type/instance!");
 		}
 		return targetNode.getNodeTY();
 	}
