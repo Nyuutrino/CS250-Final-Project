@@ -11,20 +11,32 @@ import game.GameConfig;
 
 import java.awt.*;
 
-public class ThreeWay extends Barrier implements Nodes{
-    // How many tiles wide the three way is from the center line. The total width will be 2n, where n is the tile width specified
-    private final int tileWidth = 1;
-    //The wall of the three way
-    private Rectangle wall;
-    // Three way border color
-    private Color color = Color.white;
-    // Thickness of the three way border lines when drawn
-    private final int thickness = 2;
-    // Nodes of the three way. We have three - one for each side.
-    //The order will be the opposite of the direction of the three way (the inlet),
-    //The direction left of the opposite (left of the inlet),
-    //The direction right of the opposite (right of the inlet)
-    private Node[] nodes = new Node[3];
+public class ThreeWay extends Corridor{
+	// How many tiles wide the three way is from the center line. The total width will be 2n, where n is the tile width specified
+	private final int tileWidth = 1;
+	//The wall of the three way
+	private Rectangle wall;
+	// Three way border color
+	private Color color = Color.white;
+	// Thickness of the three way border lines when drawn
+	private final int thickness = 2;
+	//Branch configuration. The Three-way can branch off in three ways - left-right, straight-left & straight-right
+	public int branchConfig;
+	//Branch configuration values. Use when specifying the branch configuration.
+	//Left-right
+	public static final int BRANCH_LR = 0;
+	//Straight & left
+	public static final int BRANCH_SL = 1;
+	//Straight & right
+	public static final int BRANCH_SR = 2;
+	// Nodes of the three way. We have three - one for each side.
+	/**
+	 * The order will depend on the configuration of the branching, but it should look something like this:
+	 * node[0] - the node from the previous barrier/start
+	 * node[1] - either the straight branch or the left branch
+	 * node[2] - the left/right branch
+	*/
+	private Node[] nodes = new Node[3];
 
 	/**
 	 * Method for all the code needed for setting up the three way instance
@@ -145,14 +157,14 @@ public class ThreeWay extends Barrier implements Nodes{
 		wall = new Rectangle(startX, startY, width, height);
 	}
 
-    /**
-     * @param tileX defined in super
-     * @param tileY defined in super
-     */
-    public ThreeWay(int tileX, int tileY, Direction dir) {
-        super(tileX, tileY, dir);
-        threeWayConstruct();
-    }
+	/**
+	 * @param tileX defined in super
+	 * @param tileY defined in super
+	 */
+	public ThreeWay(int tileX, int tileY, Direction dir, int branchConfig) {
+		super(tileX, tileY, dir);
+		threeWayConstruct(branchConfig);
+	}
 
 	/**
 	 * Allows initializing a new three way so that it will append onto a node of another corridor
@@ -163,75 +175,66 @@ public class ThreeWay extends Barrier implements Nodes{
 		threeWayConstruct(branchConfig);
 	}
 
-    @Override
-    public void draw(Graphics2D g2) {
-        //Wall
-        g2.setColor(color);
-        g2.fillRect(wall.x, wall.y, wall.width, wall.height);
-        //Draw the debug stuff if debug mode is enabled
-        if (!GameConfig.debug) return;
-        //Guiding lines
-        int startTX1 = tileX, startTY1 = tileY, startTX2 = tileX, startTY2 = tileY;
-        int width1 = 0, height1 = 0, width2 = 0, height2 = 0;
-        if (dir.getDirection() == Direction.NORTH) {
-            startTY1 -= tileWidth;
-            width1 = 2;
-            height1 = tileWidth * GameConfig.tileSize;
-            startTX2 -= tileWidth;
-            startTY2 -= tileWidth;
-            height2 = 2;
-            width2 = (tileWidth * 2) * GameConfig.tileSize;
-        }
-        if (dir.getDirection() == Direction.SOUTH) {
-            width1 = 2;
-            height1 = tileWidth * GameConfig.tileSize;
-            startTX2 -= tileWidth;
-            startTY2 += tileWidth;
-            height2 = 2;
-            width2 = (tileWidth * 2) * GameConfig.tileSize;
-        }
-        if (dir.getDirection() == Direction.EAST) {
-            width1 = tileWidth * GameConfig.tileSize;
-            height1 = 2;
-            startTX2 += tileWidth;
-            startTY2 -= tileWidth;
-            width2 = 2;
-            height2 = (tileWidth * 2) * GameConfig.tileSize;
-        }
-        if (dir.getDirection() == Direction.WEST) {
-            startTX1 -= tileWidth;
-            width1 = tileWidth * GameConfig.tileSize;
-            height1 = 2;
-            startTX2 -= tileWidth;
-            startTY2 -= tileWidth;
-            width2 = 2;
-            height2 = (tileWidth * 2) * GameConfig.tileSize;
-        }
-        g2.setColor(Color.GREEN);
-        g2.fillRect(startTX1 * GameConfig.tileSize, startTY1 * GameConfig.tileSize, width1, height1);
-        g2.fillRect(startTX2 * GameConfig.tileSize, startTY2 * GameConfig.tileSize, width2, height2);
-    }
+	@Override
+	public void draw(Graphics2D g2) {
+		//Wall
+		g2.setColor(color);
+		g2.fillRect(wall.x, wall.y, wall.width, wall.height);
+		//Draw the debug stuff if debug mode is enabled
+		if (!GameConfig.debug) return;
+		g2.setColor(Color.GREEN);
+		g2.setStroke(new BasicStroke(2));
 
-    public Node[] getAvailableNodes() {
-        return nodes;
-    }
+		//Guiding lines
+		if (branchConfig == BRANCH_LR) {
+			int lineX = (dir.getDirection() == Direction.NORTH || dir.getDirection() == Direction.SOUTH) ? x : nodes[1].getNodeX();
+			int lineY = (dir.getDirection() == Direction.EAST || dir.getDirection() == Direction.WEST) ? x : nodes[1].getNodeY();
+			g2.drawLine(x, y,lineX, lineY);
+			g2.drawLine(nodes[1].getNodeX(), nodes[1].getNodeY(), nodes[2].getNodeX(), nodes[2].getNodeY());
+		}
+		else if (branchConfig == BRANCH_SL) {
+			g2.drawLine(x, y, nodes[1].getNodeX(), nodes[1].getNodeY());
+			int lineX = (dir.getDirection() == Direction.NORTH || dir.getDirection() == Direction.SOUTH) ? x : (nodes[0].getNodeX() + nodes[1].getNodeX()) / 2;
+			int lineY = (dir.getDirection() == Direction.NORTH || dir.getDirection() == Direction.SOUTH) ? (nodes[0].getNodeY() + nodes[1].getNodeY()) / 2 : y;
+			g2.drawLine(nodes[2].getNodeX(), nodes[2].getNodeY(), lineX, lineY);
+		}
+		else {
+			g2.drawLine(x, y, nodes[1].getNodeX(), nodes[1].getNodeY());
+			int lineX = (dir.getDirection() == Direction.NORTH || dir.getDirection() == Direction.SOUTH) ? x : (nodes[0].getNodeX() + nodes[1].getNodeX()) / 2;
+			int lineY = (dir.getDirection() == Direction.NORTH || dir.getDirection() == Direction.SOUTH) ? (nodes[0].getNodeY() + nodes[1].getNodeY()) / 2 : y;
+			g2.drawLine(nodes[2].getNodeX(), nodes[2].getNodeY(), lineX, lineY);
+		}
 
-    /**
-     * Checks if a node belongs to an instance of this class
-     */
-    private boolean nodeInstanceofClass(Node targetNode){
-        Node node = null;
-        //Make sure the node is an instance of one of this class's specific instance's nodes
-        for (Node n : nodes) {
-            if (n == targetNode) {
-                node = n;
-            }
-        }
-        if (node == null) {
-            return false;
-        }
-        return true;
-    }
+		//Starting node
+		g2.setColor(Color.RED);
+		g2.fillOval(nodes[0].getNodeX() - 5, nodes[0].getNodeY() - 5, 10, 10);
+
+		//Other two nodes
+		g2.setColor(Color.ORANGE);
+		g2.fillOval(nodes[1].getNodeX() - 5, nodes[1].getNodeY() - 5, 10, 10);
+		g2.fillOval(nodes[2].getNodeX() - 5, nodes[2].getNodeY() - 5, 10, 10);
+	}
+
+	public Node[] getAvailableNodes() {
+		return nodes;
+	}
+
+	/**
+	 * Checks if a node belongs to an instance of this class
+	 */
+	private boolean nodeInstanceofClass(Node targetNode){
+		Node node = null;
+		//Make sure the node is an instance of one of this class's specific instance's nodes
+		for (Node n : nodes) {
+			if (n == targetNode) {
+				node = n;
+			}
+		}
+		if (node == null) {
+			return false;
+		}
+		return true;
+	}
 
 	public int getAttachmentPointTX(Node targetNode) {
 		if (!nodeInstanceofClass(targetNode)) {
@@ -247,7 +250,7 @@ public class ThreeWay extends Barrier implements Nodes{
 		return targetNode.getNodeTY();
 	}
 
-    public boolean isColliding(Rectangle rect) {
-        return wall.intersects(rect);
-    }
+	public boolean isColliding(Rectangle rect) {
+		return wall.intersects(rect);
+	}
 }
