@@ -1,5 +1,7 @@
 package main;
 
+import map.MapGen;
+
 import javax.swing.JFrame;
 
 public class Main {
@@ -21,9 +23,5 @@ public class Main {
 			window.setVisible(true);
 			
 			gamePanel.startGameThread();
-		
-		
-		
-		
 		}
 }

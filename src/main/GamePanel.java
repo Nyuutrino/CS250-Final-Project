@@ -8,6 +8,7 @@ import barrier.*;
 import direction.Direction;
 import entity.Player;
 import game.GameConfig;
+import map.MapGen;
 
 public class GamePanel extends JPanel implements Runnable {
 //SCREEN SETTINGS
@@ -30,17 +31,13 @@ public class GamePanel extends JPanel implements Runnable {
 	//Test
 	public Barrier[] barriers;
 	Rectangle playerRect = new Rectangle(player.x, player.y, tileSize, tileSize);
-	Hallway testHall = new Hallway(20, 10, 5, new Direction(Direction.SOUTH));
-	Hallway testHall2 = new Hallway(testHall, testHall.getAvailableNodes()[1], 5);
-	Hallway testHall3 = new Hallway(testHall2, testHall2.getAvailableNodes()[1], 5);
-	Corner testCorner = new Corner(testHall3, testHall3.getAvailableNodes()[1], Corner.LEFT);
-	FourWay testFW = new FourWay(testCorner, testCorner.getAvailableNodes()[1]);
-	ThreeWay testTW = new ThreeWay(testHall, testHall.getAvailableNodes()[0]);
-
 	//set players default position
 	private int playerX = GameConfig.playerX;
 	private int playerY = GameConfig.playerY;
 	private int playerSpeed = GameConfig.playerSpeed;
+
+	//Map
+	private MapGen mapGen;
 
 	public GamePanel() {
 
@@ -49,12 +46,7 @@ public class GamePanel extends JPanel implements Runnable {
 		this.setDoubleBuffered(true);
 		this.addKeyListener(keyH);
 		this.setFocusable(true);
-		testHall.getAvailableNodes()[1].linkNodes(testHall2.getAvailableNodes()[0]);
-		testHall2.getAvailableNodes()[1].linkNodes(testHall3.getAvailableNodes()[0]);
-		testHall3.getAvailableNodes()[1].linkNodes(testCorner.getAvailableNodes()[0]);
-		testCorner.getAvailableNodes()[1].linkNodes(testFW.getAvailableNodes()[0]);
-		testHall.getAvailableNodes()[0].linkNodes(testTW.getAvailableNodes()[0]);
-		barriers = new Barrier[]{testHall, testHall2, testHall3, testCorner, testFW, testTW};
+		barriers = new Barrier[]{};
 	}
 
 	public void startGameThread() {
@@ -73,7 +65,9 @@ public class GamePanel extends JPanel implements Runnable {
 		long timer = 0;
 		int drawCount = 0;
 
-
+		mapGen = new MapGen(0, 2, screenHeight / tileSize / 2 - 2, screenWidth / tileSize / 2);
+		mapGen.genMap(1234567);
+		mapGen.printBarrierLength();
 		while (gameThread != null) {
 			//System.out.println("game is running");
 
@@ -114,7 +108,7 @@ public class GamePanel extends JPanel implements Runnable {
 		Graphics2D g2 = (Graphics2D) g;
 
 		player.draw(g2);
-		for (Barrier b : barriers) {
+		for (Barrier b : mapGen.getBarriers()) {
 			b.draw(g2);
 			if (b.isColliding(playerRect)) {
 				g2.setColor(Color.WHITE);
