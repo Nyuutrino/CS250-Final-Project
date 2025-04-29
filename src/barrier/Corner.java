@@ -8,14 +8,13 @@ package barrier;
 import java.awt.*;
 
 import barrierNodes.Node;
-import barrierNodes.Nodes;
 import direction.Direction;
 import game.GameConfig;
 
 /**
  * 
  */
-public class Corner extends Barrier implements Nodes {
+public class Corner extends Corridor {
 	// Thickness of the hallway border lines when drawn
 	private final int thickness = 2;
 	// How many tiles wide the corner is from the center line. The total width will be 2n, where n is the tile width specified
@@ -29,7 +28,7 @@ public class Corner extends Barrier implements Nodes {
 	private Rectangle[] walls = new Rectangle[2];
 	// Bend border color
 	private Color color = Color.white;
-	// Nodes that the corner can have barriers attached to. In this case we have two - one for each end of the corner.
+	// Nodes that the corner can have corridors attached to. In this case we have two - one for each end of the corner.
 	//The first node will be the opposite of the corner direction (since it is the entrance node)
 	//And the second node will be at the end of the corner, in the direction that end is facing
 	private Node[] nodes = new Node[2];
@@ -118,12 +117,11 @@ public class Corner extends Barrier implements Nodes {
 	}
 
 	/**
-	 * Allows initializing a new corner so that it will append onto a node of another barrier
+	 * Allows initializing a new corner so that it will append onto a node of another corridor
 	 */
-	//Make sure the object is both a barrier & implements the node interface
-	public <B extends Barrier & Nodes> Corner(B prevBarrier, Node targetNode, int bendDir) {
+	public Corner(Corridor prevCorridor, Node targetNode, int bendDir) {
 		//Super needs to be the first statement in a constructor, so unfortunately it's going to look ugly like this
-		super(prevBarrier.getAttachmentPointTX(targetNode), prevBarrier.getAttachmentPointTY(targetNode), new Direction(targetNode.getDirection()));
+		super(prevCorridor.getAttachmentPointTX(targetNode), prevCorridor.getAttachmentPointTY(targetNode), new Direction(targetNode.getDirection()));
 		cornerConstruct(bendDir);
 	}
 
@@ -209,14 +207,14 @@ public class Corner extends Barrier implements Nodes {
 
 	public int getAttachmentPointTX(Node targetNode) {
 		if (!nodeInstanceofClass(targetNode)) {
-			throw new IllegalArgumentException("Target node is not a valid node for this barrier type/instance!");
+			throw new IllegalArgumentException("Target node is not a valid node for this corridor type/instance!");
 		}
 		return targetNode.getNodeTX();
 	}
 
 	public int getAttachmentPointTY(Node targetNode) {
 		if (!nodeInstanceofClass(targetNode)) {
-			throw new IllegalArgumentException("Target node is not a valid node for this barrier type/instance!");
+			throw new IllegalArgumentException("Target node is not a valid node for this corridor type/instance!");
 		}
 		return targetNode.getNodeTY();
 	}
