@@ -5,7 +5,6 @@ import java.awt.*;
 import javax.swing.JPanel;
 
 import barrier.*;
-import direction.Direction;
 import entity.Player;
 import game.GameConfig;
 import map.MapGen;
@@ -64,10 +63,8 @@ public class GamePanel extends JPanel implements Runnable {
 		long currentTime;
 		long timer = 0;
 		int drawCount = 0;
-
-		mapGen = new MapGen(0, 2, screenHeight / tileSize / 2 - 2, screenWidth / tileSize / 2);
+		mapGen = new MapGen(0, 2, screenHeight / tileSize / 2 - 2, screenWidth / tileSize / 2 - 2);
 		mapGen.genMap(1234567);
-		mapGen.printBarrierLength();
 		while (gameThread != null) {
 			//System.out.println("game is running");
 
@@ -108,9 +105,15 @@ public class GamePanel extends JPanel implements Runnable {
 		Graphics2D g2 = (Graphics2D) g;
 
 		player.draw(g2);
-		for (Barrier b : mapGen.getBarriers()) {
-			b.draw(g2);
-			if (b.isColliding(playerRect)) {
+		Barrier[] mapGenBarriers = mapGen.getBarriers();
+		for (int i = 0; i < mapGenBarriers.length; i++) {
+			Barrier c = mapGenBarriers[i];
+			if (c == null){
+				System.out.printf("Barrier %d out of %d is null\n", i + 1, mapGenBarriers.length);
+				continue;
+			}
+			c.draw(g2);
+			if (c.isColliding(playerRect)) {
 				g2.setColor(Color.WHITE);
 				g2.setFont(new Font("Tahoe", Font.BOLD, 14));
 				g2.drawString("Player is colliding!", 10, 10);
