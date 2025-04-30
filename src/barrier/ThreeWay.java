@@ -12,13 +12,13 @@ import game.GameConfig;
 import java.awt.*;
 
 public class ThreeWay extends Corridor{
-	// How many tiles wide the three way is from the center line. The total width will be 2n, where n is the tile width specified
+	// How many tiles wide the three-way is from the center line. The total width will be 2n, where n is the tile width specified
 	private final int tileWidth = 1;
-	//The wall of the three way
+	//The wall of the three-way
 	private Rectangle wall;
-	// Three way border color
+	// Three-way border color
 	private Color color = Color.white;
-	// Thickness of the three way border lines when drawn
+	// Thickness of the three-way borderlines when drawn
 	private final int thickness = 2;
 	//Branch configuration. The Three-way can branch off in three ways - left-right, straight-left & straight-right
 	public int branchConfig;
@@ -29,7 +29,7 @@ public class ThreeWay extends Corridor{
 	public static final int BRANCH_SL = 1;
 	//Straight & right
 	public static final int BRANCH_SR = 2;
-	// Nodes of the three way. We have three - one for each side.
+	// Nodes of the three-way. We have three - one for each side.
 	/**
 	 * The order will depend on the configuration of the branching, but it should look something like this:
 	 * node[0] - the node from the previous barrier/start
@@ -39,7 +39,7 @@ public class ThreeWay extends Corridor{
 	private Node[] nodes = new Node[3];
 
 	/**
-	 * Method for all the code needed for setting up the three way instance
+	 * Method for all the code needed for setting up the three-way instance
 	 */
 	private void threeWayConstruct(int branchConfig){
 		if (branchConfig < 0 || branchConfig > 2)
@@ -160,6 +160,8 @@ public class ThreeWay extends Corridor{
 	/**
 	 * @param tileX defined in super
 	 * @param tileY defined in super
+	 * @param dir defined in super
+	 * @param branchConfig the way the three-way branches
 	 */
 	public ThreeWay(int tileX, int tileY, Direction dir, int branchConfig) {
 		super(tileX, tileY, dir);
@@ -167,7 +169,7 @@ public class ThreeWay extends Corridor{
 	}
 
 	/**
-	 * Allows initializing a new three way so that it will append onto a node of another corridor
+	 * Allows initializing a new three-way so that it will append onto a node of another corridor
 	 */
 	public ThreeWay(Corridor prevCorridor, Node targetNode, int branchConfig) {
 		//Super needs to be the first statement in a constructor, so unfortunately it's going to look ugly like this
