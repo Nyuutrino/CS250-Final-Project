@@ -167,9 +167,7 @@ public class MapGen {
 			bLoop: for (int j = 1; j < b.getNumPoints() - 1; ++j) {
 				Point pt = b.getPoint(j);
 				//Check if this point exists in the corridors list. Skip if it does
-				Point loc = new Point(tileStart.x + pt.x, tileStart.y + pt.y);
 				for (int k = 0; k < corridors.size(); k++) {
-					Corridor c = corridors.get(k);
 					Point cPt = corridorPts.get(k);
 					if (cPt.equals(pt)) {
 						continue bLoop;
