@@ -80,7 +80,7 @@ public class ThreeWay extends Corridor{
 		else if (dir.getDirection() == Direction.SOUTH) {
 			if (branchConfig == BRANCH_LR) {
 				startX -= tileWidth * GameConfig.tileSize;
-				startY += (tileWidth * 2) * GameConfig.tileSize + thickness;
+				startY += (tileWidth * 2) * GameConfig.tileSize;
 				width = tileWidth * 2 * GameConfig.tileSize;
 				height = thickness;
 				nodes[1] = new Node(Direction.left(dir), tileX + tileWidth, tileY + tileWidth);
