@@ -19,7 +19,7 @@ public class Branch {
 		this.branchStart = branchStart;
 		this.branchEnd = branchEnd;
 		//NOTE: We assume the branchEnd coordinates will be greater than the branchStart ones due to the nature of the map generation algorithm
-		numPoints = (branchEnd.x - branchStart.x) + (branchEnd.y - branchStart.y);
+		numPoints = (branchEnd.x - branchStart.x) + (branchEnd.y - branchStart.y) - 1;
 	}
 
 	/**
