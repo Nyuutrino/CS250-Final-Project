@@ -308,7 +308,7 @@ public class MapGen {
 	 */
 	public Barrier[] getBarriers(){
 		Barrier[] barriers = new Barrier[corridors.size() + 2];
-		for (int i = 1; i < corridors.size(); ++i)
+		for (int i = 1; i < corridors.size() + 1; ++i)
 			barriers[i] = corridors.get(i - 1);
 		barriers[0] = caps[0];
 		barriers[barriers.length - 1] = caps[1];
