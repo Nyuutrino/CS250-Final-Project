@@ -291,12 +291,6 @@ public class MapGen {
 				//Add the corridor
 				corridors.add(corridor);
 				corridorPts.add(pt);
-				//Attach corridor to previous node
-				for (Node n : corridor.getAvailableNodes()){
-					if (n.getDirectionInt() == Direction.opposite(attachmentNode.getDirectionInt())) {
-						attachmentNode.linkNodes(n);
-					}
-				}
 			}
 		}
 
