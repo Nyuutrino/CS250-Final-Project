@@ -190,8 +190,8 @@ public class ThreeWay extends Corridor{
 		//Guiding lines
 		if (branchConfig == BRANCH_LR) {
 			int lineX = (dir.getDirection() == Direction.NORTH || dir.getDirection() == Direction.SOUTH) ? x : nodes[1].getNodeX();
-			int lineY = (dir.getDirection() == Direction.EAST || dir.getDirection() == Direction.WEST) ? x : nodes[1].getNodeY();
-			g2.drawLine(x, y,lineX, lineY);
+			int lineY = (dir.getDirection() == Direction.EAST || dir.getDirection() == Direction.WEST) ? y : nodes[1].getNodeY();
+			g2.drawLine(x, y, lineX, lineY);
 			g2.drawLine(nodes[1].getNodeX(), nodes[1].getNodeY(), nodes[2].getNodeX(), nodes[2].getNodeY());
 		}
 		else if (branchConfig == BRANCH_SL) {
