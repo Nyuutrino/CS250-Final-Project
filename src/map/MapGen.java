@@ -23,7 +23,7 @@ public class MapGen {
 	private Map map;
 	private int taxicabDistance;
 	//End-caps (dead-end & door) for the corridors
-	private Barrier[] caps;
+	private Barrier[] caps = new Barrier[2];
 	private ArrayList<Corridor> corridors = new ArrayList<>();
 	//Corresponding points marking the corridors
 	private ArrayList<Point> corridorPts = new ArrayList<>();
@@ -67,6 +67,7 @@ public class MapGen {
 		//Determines if we will change direction - the higher, the better
 		double dirChangeBias = 0.92;
 		//Number of branches we'll generate. For now, it will be set to a hard-coded number
+		//TODO: Make this number dynamic?
 		int numBranches = 8;
 		Branch[] branches = new Branch[numBranches];
 		//Each branch will span the length of the map
@@ -102,8 +103,6 @@ public class MapGen {
 				pt.translate(dir ^ 1, dir);
 			}
 			map.pushBranch(branches[i]);
-
-
 		}
 
 		if (GameConfig.debug) {
@@ -157,6 +156,10 @@ public class MapGen {
 		//Add start to the corridors list.
 		corridors.add(start);
 		corridorPts.add(new Point(0, 0));
+		//Add dead-end to both start & end corridors
+		//TODO replace dead-end with door for the end corridor
+		caps[0] = new DeadEnd(start, start.getAvailableNodes()[0]);
+		caps[1] = new DeadEnd(end, end.getAvailableNodes()[1]);
 
 		//Add the rest of the corridors
 		for (int i = 0; i < numBranches; ++i) {
