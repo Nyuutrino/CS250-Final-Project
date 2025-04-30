@@ -27,6 +27,7 @@ public class MapGen {
 	private ArrayList<Corridor> corridors = new ArrayList<>();
 	//Corresponding points marking the corridors
 	private ArrayList<Point> corridorPts = new ArrayList<>();
+	private Corridor startCorridor, endCorridor;
 
 	/**
 	 * Initializes the map generation class
@@ -160,6 +161,9 @@ public class MapGen {
 		//TODO replace dead-end with door for the end corridor
 		caps[0] = new DeadEnd(start, start.getAvailableNodes()[0]);
 		caps[1] = new DeadEnd(end, end.getAvailableNodes()[1]);
+		//Add start & end corridors to the start & end corridor fields
+		startCorridor = start;
+		endCorridor = end;
 
 		//Add the rest of the corridors
 		for (int i = 0; i < numBranches; ++i) {
@@ -310,4 +314,19 @@ public class MapGen {
 		return barriers;
 	}
 
+	/**
+	 * Returns the start corridor
+	 * @return the end corridor
+	 */
+	public Corridor getStartCorridor() {
+		return startCorridor;
+	}
+
+	/**
+	 * Returns the end corridor
+	 * @return the end corridor
+	 */
+	public Corridor getEndCorridor() {
+		return endCorridor;
+	}
 }
