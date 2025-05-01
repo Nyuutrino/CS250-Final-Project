@@ -14,7 +14,7 @@ public final class GameConfig {
 	public static final int scale = 3;
 	
 	public static final int tileSize = orTileSize * scale;
-	public static final int maxScreenCol = 35	;
+	public static final int maxScreenCol = 30;
 	public static final int maxScreenRow = 20 ;
 	public static final int screenWidth = tileSize * maxScreenCol;
 	public static final int screenHeight = tileSize * maxScreenRow;
