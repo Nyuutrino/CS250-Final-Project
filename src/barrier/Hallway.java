@@ -155,4 +155,24 @@ public class Hallway extends Corridor {
 	public boolean isColliding(Rectangle rect) {
 		return walls[0].intersects(rect) || walls[1].intersects(rect);
 	}
+
+	@Override
+	// Override because we have the length to account for
+	public Point getMidpoint(){
+		Point pt = new Point(tileX, tileY);
+		switch (dir.getDirection()){
+			case Direction.NORTH:
+				pt.translate(0, -len / 2);
+				break;
+			case Direction.SOUTH:
+				pt.translate(0, len / 2);
+				break;
+			case Direction.EAST:
+				pt.translate(len / 2, 0);
+				break;
+			case Direction.WEST:
+				pt.translate(-len / 2, 0);
+		}
+		return pt;
+	}
 }

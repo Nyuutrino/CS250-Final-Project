@@ -153,4 +153,5 @@ public class FourWay extends Corridor {
 		//Always return false (since there are no walls to collide with)
 		return false;
 	}
+
 }
