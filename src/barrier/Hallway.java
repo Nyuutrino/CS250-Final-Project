@@ -19,8 +19,6 @@ public class Hallway extends Corridor {
 	private int len;
 	// Thickness of the hallway border lines when drawn
 	private final int thickness = 2;
-	// How many tiles wide the hallway is from the center line. The total width will be 2n, where n is the tile width specified
-	private final int tileWidth = 1;
 	//Walls of the hallway (used for collision checking & drawing)
 	private Rectangle[] walls = new Rectangle[2];
 	// Hallway border color

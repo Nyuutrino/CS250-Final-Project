@@ -12,8 +12,6 @@ import game.GameConfig;
 import java.awt.*;
 
 public class DeadEnd extends Barrier {
-	// How many tiles wide the dead end is from the center line. The total width will be 2n, where n is the tile width specified
-	private final int tileWidth = 1;
 	//The wall of the dead end
 	private Rectangle wall;
 	//Border color

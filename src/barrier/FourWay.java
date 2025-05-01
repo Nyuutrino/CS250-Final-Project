@@ -15,9 +15,6 @@ import game.GameConfig;
  * 
  */
 public class FourWay extends Corridor {
-
-	// How many tiles wide the four way is from the center line. The total width will be 2n, where n is the tile width specified
-	private final int tileWidth = 1;
 	// Nodes of the four way. We have four - one for each side.
 	//The order will be the opposite of the direction of the four way (the inlet),
 	//The direction of the four way (across from the inlet),

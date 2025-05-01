@@ -19,6 +19,8 @@ public abstract class Barrier implements Collidable, Drawable {
 	protected int x, y;
 	// Rotation of the barrier defined by direction. Use values defined in the Direction class
 	protected final Direction dir;
+	// How many tiles wide the barrier is from the center line. The total width will be 2n, where n is the tile width specified
+	protected final int tileWidth = 1;
 
 	public Barrier(int tileX, int tileY, Direction dir) {
 		this.tileX = tileX;

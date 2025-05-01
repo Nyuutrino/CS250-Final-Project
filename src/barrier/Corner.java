@@ -17,8 +17,6 @@ import game.GameConfig;
 public class Corner extends Corridor {
 	// Thickness of the hallway border lines when drawn
 	private final int thickness = 2;
-	// How many tiles wide the corner is from the center line. The total width will be 2n, where n is the tile width specified
-	private final int tileWidth = 1;
 	//Bend direction. 0 for left & 1 for right. Use corner static variables when passing in the argument to the constructor for extra readability
 	private int bendDir = 0;
 	//Variables to make the left/right assignment more readable in constructor arguments

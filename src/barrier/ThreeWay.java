@@ -12,8 +12,6 @@ import game.GameConfig;
 import java.awt.*;
 
 public class ThreeWay extends Corridor{
-	// How many tiles wide the three-way is from the center line. The total width will be 2n, where n is the tile width specified
-	private final int tileWidth = 1;
 	//The wall of the three-way
 	private Rectangle wall;
 	// Three-way border color
