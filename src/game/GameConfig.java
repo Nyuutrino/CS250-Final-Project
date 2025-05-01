@@ -10,12 +10,12 @@ package game;
  */
 public final class GameConfig {
 	//Screen settings
-	public static final int orTileSize = 10;
+	public static final int orTileSize = 16;
 	public static final int scale = 3;
 	
 	public static final int tileSize = orTileSize * scale;
-	public static final int maxScreenCol = 60	;
-	public static final int maxScreenRow = 30 ;
+	public static final int maxScreenCol = 30;
+	public static final int maxScreenRow = 20 ;
 	public static final int screenWidth = tileSize * maxScreenCol;
 	public static final int screenHeight = tileSize * maxScreenRow;
 	
