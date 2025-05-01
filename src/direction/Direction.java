@@ -120,4 +120,20 @@ public class Direction {
 		return new Direction((dir.getDirection() + 2) % 4);
 	}
 
+	@Override
+	public String toString() {
+		switch (dir) {
+			case NORTH:
+				return "North";
+			case SOUTH:
+				return "South";
+			case EAST:
+				return "East";
+			case WEST:
+				return "West";
+			default:
+				return "";
+		}
+	}
+
 }

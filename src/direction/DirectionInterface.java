@@ -9,5 +9,5 @@ package direction;
  * 
  */
 public interface DirectionInterface {
-	
+	//TODO
 }

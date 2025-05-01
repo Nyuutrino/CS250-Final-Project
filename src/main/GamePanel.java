@@ -1,15 +1,17 @@
 package main;
 
 import java.awt.*;
-import javax.swing.*;
+
+import javax.swing.JPanel;
+
 import barrier.*;
-import direction.Direction;
 import entity.Player;
 import game.GameConfig;
+import map.MapGen;
 
-public class GamePanel extends JPanel {
+public class GamePanel extends JPanel implements Runnable {
+//SCREEN SETTINGS
 
-	// SCREEN SETTINGS
 	final int orTileSize = GameConfig.orTileSize;
 	final int scale = GameConfig.scale;
 
@@ -19,85 +21,106 @@ public class GamePanel extends JPanel {
 	final int screenWidth = GameConfig.screenWidth;
 	final int screenHeight = GameConfig.screenHeight;
 
-	// FPS variables
+	//FPS
 	int fps = GameConfig.fps;
-	Timer gameTimer;
-	long lastSecondTime = 0;
 
 	KeyHandler keyH = new KeyHandler();
+	Thread gameThread;
 	Player player = new Player(this, keyH);
-
+	//Test
 	public Barrier[] barriers;
 	Rectangle playerRect = new Rectangle(player.x, player.y, tileSize, tileSize);
+	//set players default position
+	private int playerX = GameConfig.playerX;
+	private int playerY = GameConfig.playerY;
+	private int playerSpeed = GameConfig.playerSpeed;
 
-	Hallway testHall = new Hallway(20, 10, 5, new Direction(Direction.SOUTH));
-	Hallway testHall2 = new Hallway(testHall, testHall.getAvailableNodes()[1], 5);
-	Hallway testHall3 = new Hallway(testHall2, testHall2.getAvailableNodes()[1], 5);
-	Corner testCorner = new Corner(testHall3, testHall3.getAvailableNodes()[1], Corner.LEFT);
-	FourWay testFW = new FourWay(testCorner, testCorner.getAvailableNodes()[1]);
-	ThreeWay testTW = new ThreeWay(testHall, testHall.getAvailableNodes()[0]);
-
-	private int drawCount = 0;
-
+	//Map
+	private MapGen mapGen;
 
 	public GamePanel() {
+
 		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
 		this.setBackground(Color.black);
 		this.setDoubleBuffered(true);
 		this.addKeyListener(keyH);
 		this.setFocusable(true);
-
-		// Link barrier nodes
-		testHall.getAvailableNodes()[1].linkNodes(testHall2.getAvailableNodes()[0]);
-		testHall2.getAvailableNodes()[1].linkNodes(testHall3.getAvailableNodes()[0]);
-		testHall3.getAvailableNodes()[1].linkNodes(testCorner.getAvailableNodes()[0]);
-		testCorner.getAvailableNodes()[1].linkNodes(testFW.getAvailableNodes()[0]);
-		testHall.getAvailableNodes()[0].linkNodes(testTW.getAvailableNodes()[0]);
-
-		barriers = new Barrier[]{testHall, testHall2, testHall3, testCorner, testFW, testTW};
+		barriers = new Barrier[]{};
 	}
-    //game timer loop
-	public void startGameTimer() {
-		int delay = 1000 / fps; // milliseconds delay for 60fps
-		gameTimer = new Timer(delay, e -> {//loop delay
-			update();
-			repaint();
-			drawCount++;
 
-			// Optional FPS debug
-			if (System.currentTimeMillis() - lastSecondTime >= 1000) {
-                System.out.println("FPS: " + drawCount);
-				drawCount = 0;
-				lastSecondTime = System.currentTimeMillis();
+	public void startGameThread() {
+		gameThread = new Thread(this);
+		gameThread.start();
+	}
+
+	@Override
+	public void run() {
+
+		//FPS code
+		double drawInterval = 1000000000 / fps;
+		double delta = 0;
+		long lastTime = System.nanoTime();
+		long currentTime;
+		long timer = 0;
+		int drawCount = 0;
+		mapGen = new MapGen(0, 2, screenHeight / tileSize / 2 - 2, screenWidth / tileSize / 2 - 2);
+		mapGen.genMap(1234567);
+		while (gameThread != null) {
+			//System.out.println("game is running");
+
+			currentTime = System.nanoTime();
+
+			//Delta method
+			delta += (currentTime - lastTime) / drawInterval;
+			timer += (currentTime - lastTime);
+			lastTime = currentTime;
+
+			if (delta >= 1) {
+				update();
+				repaint();
+				delta--;
+				drawCount++;
 			}
-		});
-		//start timer
-		gameTimer.start();
+
+			if (timer >= 1000000000) {
+//				System.out.println("FPS: " + drawCount);
+				drawCount = 0;
+				timer = 0;
+			}
+
+		}
+
 	}
 
 	public void update() {
+
 		player.update();
 		playerRect.x = player.x;
 		playerRect.y = player.y;
 	}
 
-	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
 		Graphics2D g2 = (Graphics2D) g;
+
 		player.draw(g2);
-		//barrier draw
-		for (Barrier b : barriers) {
-			b.draw(g2);
-			//collision testing
-		//	if (b.isColliding(playerRect)) {
-		//		g2.setColor(Color.WHITE);
-		//		g2.setFont(new Font("Tahoe", Font.BOLD, 14));
-		//		g2.drawString("Player is colliding!", 10, 10);
-		//	}
+		Barrier[] mapGenBarriers = mapGen.getBarriers();
+		for (int i = 0; i < mapGenBarriers.length; i++) {
+			Barrier c = mapGenBarriers[i];
+			if (c == null){
+				System.out.printf("Barrier %d out of %d is null\n", i + 1, mapGenBarriers.length);
+				continue;
+			}
+			c.draw(g2);
+			if (c.isColliding(playerRect)) {
+				g2.setColor(Color.WHITE);
+				g2.setFont(new Font("Tahoe", Font.BOLD, 14));
+				g2.drawString("Player is colliding!", 10, 10);
+			}
 		}
 
+		//Debug mode stuff
 		if (GameConfig.debug) {
 			int initialX = 0;
 			int initialY;
@@ -115,5 +138,7 @@ public class GamePanel extends JPanel {
 		}
 
 		g2.dispose();
+
+
 	}
 }
