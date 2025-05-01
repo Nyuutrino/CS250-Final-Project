@@ -16,13 +16,13 @@ public class GamePanel extends JPanel implements Runnable{
 
 	final int orTileSize = GameConfig.orTileSize;
 	final int scale = GameConfig.scale;
-	
+
 	public int tileSize = GameConfig.tileSize;
 	public int maxScreenCol = GameConfig.maxScreenCol;
 	public int maxScreenRow = GameConfig.maxScreenRow;
 	public int screenWidth = GameConfig.screenWidth;
 	public int screenHeight = GameConfig.screenHeight;
-	
+
 	//FPS
 	int fps = GameConfig.fps;
 
@@ -36,6 +36,7 @@ public class GamePanel extends JPanel implements Runnable{
 	public CollisionChecker cChecker = new CollisionChecker(this);
 	public SuperObject obj[] = new SuperObject[10];
 	public AssetSetter aSetter = new AssetSetter(this);
+	public MapGen mapGen;
 	TileManager tileM = new TileManager(this);
 	KeyHandler keyH = new KeyHandler();
 	public UI ui = new UI(this);
@@ -45,26 +46,30 @@ public class GamePanel extends JPanel implements Runnable{
 	//Hallway testHall = new Hallway(10, 5, 5, new Direction(Direction.EAST));
 
 
-	
+
 	//set players default position
 	//private int playerX = GameConfig.playerX;
 	//private int playerY = GameConfig.playerY;
 	//private int playerSpeed = GameConfig.playerSpeed;
-	
+
 	public GamePanel() {
-		
+
 		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
 		this.setBackground(Color.black);
 		this.setDoubleBuffered(true);
 		this.addKeyListener(keyH);
 		this.setFocusable(true);
-		
-		
-		
+
+
+
 	}
 
 	public void setupGame() {
 		aSetter.setObject();
+		//Create map
+		mapGen = new MapGen(0, 0, worldHeight, worldWidth);
+		long seed = 12345;
+		mapGen.genMap(seed);
 	}
 
 
@@ -75,7 +80,7 @@ public class GamePanel extends JPanel implements Runnable{
 
 	@Override
 	public void run() {
-		
+
 		//FPS code
 		double drawInterval = 1000000000/fps;
 		double delta = 0;
@@ -83,49 +88,55 @@ public class GamePanel extends JPanel implements Runnable{
 		long currentTime;
 		long timer = 0;
 		int drawCount = 0;
-		
-		
+
+
 		while (gameThread != null) {
 			//System.out.println("game is running");
-			
+
 			currentTime = System.nanoTime();
-			
+
 			//Delta method
 			delta += (currentTime - lastTime) / drawInterval;
 			timer += (currentTime - lastTime);
 			lastTime = currentTime;
-			
+
 			if (delta >= 1) {
 				update();
 				repaint();
 				delta--;
 				drawCount++;
 			}
-			
+
 			if (timer >= 1000000000) {
 //				System.out.println("FPS: " + drawCount);
 				drawCount = 0;
 				timer = 0;
 			}
-			
+
 		}
-		
+
 	}
 	public void update() {
-		
+
 		player.update();
 	}
-	
+
 	public void paintComponent(Graphics g) {
 		//method that paints componets on the game panel
 		super.paintComponent(g);
-		
+
 		Graphics2D g2 = (Graphics2D)g;
 
 
 
 		//draws tiels
-		tileM.draw(g2);
+//		tileM.draw(g2);
+
+		//Draw barriers
+		Barrier[] barriers = mapGen.getBarriers();
+		for(Barrier b : barriers) {
+			b.draw(g2);
+		}
 
 		//objects
 		for(int i = 0; i < obj.length; i++) {
@@ -139,13 +150,13 @@ public class GamePanel extends JPanel implements Runnable{
 		//UI
 		ui.draw(g2);
 
-		
+
 		g2.dispose();
 		}
 
 
-		
+
 	}
-	
+
 
 
