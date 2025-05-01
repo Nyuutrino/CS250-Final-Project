@@ -8,35 +8,49 @@ import barrier.*;
 import entity.Player;
 import game.GameConfig;
 import map.MapGen;
+import object.SuperObject;
+import tile.TileManager;
 
-public class GamePanel extends JPanel implements Runnable {
+public class GamePanel extends JPanel implements Runnable{
 //SCREEN SETTINGS
 
 	final int orTileSize = GameConfig.orTileSize;
 	final int scale = GameConfig.scale;
 
 	public int tileSize = GameConfig.tileSize;
-	final int maxScreenCol = GameConfig.maxScreenCol;
-	final int maxScreenRow = GameConfig.maxScreenRow;
-	final int screenWidth = GameConfig.screenWidth;
-	final int screenHeight = GameConfig.screenHeight;
+	public int maxScreenCol = GameConfig.maxScreenCol;
+	public int maxScreenRow = GameConfig.maxScreenRow;
+	public int screenWidth = GameConfig.screenWidth;
+	public int screenHeight = GameConfig.screenHeight;
 
 	//FPS
 	int fps = GameConfig.fps;
 
-	KeyHandler keyH = new KeyHandler();
-	Thread gameThread;
-	Player player = new Player(this, keyH);
-	//Test
-	public Barrier[] barriers;
-	Rectangle playerRect = new Rectangle(player.x, player.y, tileSize, tileSize);
-	//set players default position
-	private int playerX = GameConfig.playerX;
-	private int playerY = GameConfig.playerY;
-	private int playerSpeed = GameConfig.playerSpeed;
+	//WORLD SETTINGS
+	public final int maxWorldCol = 30;
+	public final int maxWorldRow = 32;
+	public final int worldWidth = tileSize * maxWorldCol;
+	public final int worldHeight = tileSize * maxWorldCol;
 
-	//Map
-	private MapGen mapGen;
+
+	public CollisionChecker cChecker = new CollisionChecker(this);
+	public SuperObject obj[] = new SuperObject[10];
+	public AssetSetter aSetter = new AssetSetter(this);
+	public MapGen mapGen;
+	TileManager tileM = new TileManager(this);
+	KeyHandler keyH = new KeyHandler();
+	public UI ui = new UI(this);
+	Thread gameThread;
+	public Player player = new Player(this,keyH);
+	//Test
+	//Hallway testHall = new Hallway(10, 5, 5, new Direction(Direction.EAST));
+
+
+
+	//set players default position
+	//private int playerX = GameConfig.playerX;
+	//private int playerY = GameConfig.playerY;
+	//private int playerSpeed = GameConfig.playerSpeed;
 
 	public GamePanel() {
 
@@ -45,11 +59,22 @@ public class GamePanel extends JPanel implements Runnable {
 		this.setDoubleBuffered(true);
 		this.addKeyListener(keyH);
 		this.setFocusable(true);
-		barriers = new Barrier[]{};
+
+
+
 	}
 
+	public void setupGame() {
+		aSetter.setObject();
+		//Create map
+		mapGen = new MapGen(0, 0, worldHeight, worldWidth);
+		long seed = 12345;
+		mapGen.genMap(seed);
+	}
+
+
 	public void startGameThread() {
-		gameThread = new Thread(this);
+		gameThread =  new Thread(this);
 		gameThread.start();
 	}
 
@@ -57,14 +82,14 @@ public class GamePanel extends JPanel implements Runnable {
 	public void run() {
 
 		//FPS code
-		double drawInterval = 1000000000 / fps;
+		double drawInterval = 1000000000/fps;
 		double delta = 0;
 		long lastTime = System.nanoTime();
 		long currentTime;
 		long timer = 0;
 		int drawCount = 0;
-		mapGen = new MapGen(0, 2, screenHeight / tileSize / 2 - 2, screenWidth / tileSize / 2 - 2);
-		mapGen.genMap(1234567);
+
+
 		while (gameThread != null) {
 			//System.out.println("game is running");
 
@@ -91,54 +116,47 @@ public class GamePanel extends JPanel implements Runnable {
 		}
 
 	}
-
 	public void update() {
 
 		player.update();
-		playerRect.x = player.x;
-		playerRect.y = player.y;
 	}
 
 	public void paintComponent(Graphics g) {
+		//method that paints componets on the game panel
 		super.paintComponent(g);
 
-		Graphics2D g2 = (Graphics2D) g;
+		Graphics2D g2 = (Graphics2D)g;
 
+
+
+		//draws tiels
+//		tileM.draw(g2);
+
+		//Draw barriers
+		Barrier[] barriers = mapGen.getBarriers();
+		for(Barrier b : barriers) {
+			b.draw(g2);
+		}
+
+		//objects
+		for(int i = 0; i < obj.length; i++) {
+			if(obj[i] != null) {
+				obj[i].draw(g2, this);
+			}
+		}
+		//draws player
 		player.draw(g2);
-		Barrier[] mapGenBarriers = mapGen.getBarriers();
-		for (int i = 0; i < mapGenBarriers.length; i++) {
-			Barrier c = mapGenBarriers[i];
-			if (c == null){
-				System.out.printf("Barrier %d out of %d is null\n", i + 1, mapGenBarriers.length);
-				continue;
-			}
-			c.draw(g2);
-			if (c.isColliding(playerRect)) {
-				g2.setColor(Color.WHITE);
-				g2.setFont(new Font("Tahoe", Font.BOLD, 14));
-				g2.drawString("Player is colliding!", 10, 10);
-			}
-		}
 
-		//Debug mode stuff
-		if (GameConfig.debug) {
-			int initialX = 0;
-			int initialY;
-			int width = 5;
-			int height = 5;
-			while (initialX < screenWidth) {
-				initialY = 0;
-				while (initialY < screenHeight) {
-					g2.setColor(Color.blue);
-					g2.fillOval(initialX - width / 2, initialY - height / 2, width, height);
-					initialY += tileSize;
-				}
-				initialX += tileSize;
-			}
-		}
+		//UI
+		ui.draw(g2);
+
 
 		g2.dispose();
+		}
+
 
 
 	}
-}
+
+
+
