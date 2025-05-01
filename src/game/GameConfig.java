@@ -28,6 +28,6 @@ public final class GameConfig {
 	public static final int playerSpeed = 7;
 
 	//Debug settings
-	public static boolean debug = true;
+	public static boolean debug = false;
 
 }
