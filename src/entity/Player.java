@@ -1,7 +1,5 @@
 package entity;
 
-import java.awt.Color;
-
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -19,7 +17,6 @@ public class Player extends Entity implements Drawable{
 	
 	//Class specifically for player entity, further actions only the player will do will be here
 	
-	GamePanel gp;
 	KeyHandler keyH;
 	
 	public final int screenX;
@@ -27,7 +24,8 @@ public class Player extends Entity implements Drawable{
 	public int hasKeys = 0;
 	
 	public Player(GamePanel gp, KeyHandler keyH) {
-		this.gp = gp;
+		
+		super(gp);
 		this.keyH = keyH;
 		
 		screenX = gp.screenWidth/2 -(gp.tileSize/2);
@@ -36,8 +34,8 @@ public class Player extends Entity implements Drawable{
 		solidArea = new Rectangle();
 		solidArea.x = 8;
 		solidArea.y = 16;
-		solidArea.width = 32;
-		solidArea.height = 32;
+		solidArea.width = 20;
+		solidArea.height = 20;
 		
 		solidAreaDefaultX =solidArea.x;
 		solidAreaDefaultY = solidArea.y;
@@ -56,31 +54,16 @@ public class Player extends Entity implements Drawable{
 	public void getPlayerImage() {
 		//images for movement, 1 and 2 allow for simple animation loop
 		//buffered in setup
-		up1 = setup("boy_up_1");
-		up2 = setup("boy_up_2");
-		down1 = setup("boy_down_1");
-		down2 = setup("boy_down_2");
-		left1 = setup("boy_left_1");
-		left2 = setup("boy_left_2");
-		right1 = setup("boy_right_1");
-		right2 = setup("boy_right_2");
+		up1 = setup("/player/boy_up_1");
+		up2 = setup("/player/boy_up_2");
+		down1 = setup("/player/boy_down_1");
+		down2 = setup("/player/boy_down_2");
+		left1 = setup("/player/boy_left_1");
+		left2 = setup("/player/boy_left_2");
+		right1 = setup("/player/boy_right_1");
+		right2 = setup("/player/boy_right_2");
 
-	}
-		
-	public BufferedImage setup(String imageName) {
-		UtilityTool uTool = new UtilityTool();
-		BufferedImage image = null;
-		
-		try {
-			image = ImageIO.read(getClass().getResourceAsStream("/player/" + imageName + ".png"));
-			image = uTool.scaleImage(image, gp.tileSize, gp.tileSize);
-		}catch(IOException e){
-			e.printStackTrace();
-		}
-		return image;
-	
 	}	
-	
 	
 	public void update() {
 		//update method to check for key press or for no press, also alternates every few tics
@@ -116,6 +99,10 @@ public class Player extends Entity implements Drawable{
 		int objIndex = gp.cChecker.checkObject(this, true);
 		pickUpObject(objIndex);
 		
+		//NPC collision
+		int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
+		interactNPC(npcIndex);
+		
 		//if false
 		if(collisionOn == false) {
 			
@@ -129,31 +116,55 @@ public class Player extends Entity implements Drawable{
 		}
 		}
 	
-		//method that checks for a object name, and an index, then removes or allows for interaction with that item
+		//method that checks for a object name, and an index, then removes or allows for interaction with that item, interactions are called methods
 	public void pickUpObject(int i) {
 
 		if(i != 999) {
 			String objectName = gp.obj[i].name;
 			switch(objectName) {
 			case "key":
+				gp.playSE(2);
 				gp.obj[i] = null;
 				hasKeys++;
-				gp.ui.showMessage("You got a key!");
+				gp.ui.showMessage("You have " + hasKeys + " keys!");
 				break;
 				
 			case "door":
-				if(hasKeys > 1) {
-					gp.obj[i] = null;
+				if(hasKeys > 0) {
 					hasKeys --;
-					gp.ui.gameFinished = true;
+					gp.obj[i]= null;
+					gp.playSE(4);
 				}
 				else
 					gp.ui.showMessage("You dont have enough Keys!");
 				break;
+	
+				
+			case "finaldoor":
+				if(hasKeys == 5) {
+					hasKeys = 0;
+					gp.gameState = gp.completeState;
+				}
+				else
+					gp.ui.showMessage("You dont have enough Keys!");
+				break;
+				
+			case "Boost":
+				gp.playSE(3);
+				gp.obj[i] = null;
+				gp.ui.showMessage("SPEED BOOOOST");
+				speed += 3;
 			}
 			
 		}
 		
+	}
+	
+	
+	public void interactNPC(int i) {
+		if(i != 999) {
+			
+		}
 	}
 	
 	public void draw(Graphics2D g2) {

@@ -35,8 +35,8 @@ public class TileManager {
 	public void getTileImage() {
 		//loads tile images in this method
 		//these items are loaded scaled
-			setup(0,"grass00",false);
-			setup(1,"wall",false);
+			setup(0,"floor01",false);
+			setup(1,"wall",true);
 			setup(2,"water",false);
 	}
 	
