@@ -1,26 +1,17 @@
 package entity;
 
-import java.awt.Color;
-
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
-import barrier.Barrier;
-import camera.Camera;
-import game.GameConfig;
-import main.CollisionChecker;
 import main.GamePanel;
 import main.KeyHandler;
 import main.UtilityTool;
 import game.Drawable;
-import object.Door;
-import object.Key;
 
 public class Player extends Entity implements Drawable{
 	
@@ -34,7 +25,7 @@ public class Player extends Entity implements Drawable{
 	public int hasKeys = 0;
 	//Used to detect collision
 	private Rectangle collisionBox;
-	
+
 	public Player(GamePanel gp, KeyHandler keyH) {
 		this.gp = gp;
 		this.keyH = keyH;
@@ -67,21 +58,22 @@ public class Player extends Entity implements Drawable{
 	public void getPlayerImage() {
 		//images for movement, 1 and 2 allow for simple animation loop
 		//buffered in setup
-		up1 = setup("boy_up_1");
-		up2 = setup("boy_up_2");
-		down1 = setup("boy_down_1");
-		down2 = setup("boy_down_2");
-		left1 = setup("boy_left_1");
-		left2 = setup("boy_left_2");
-		right1 = setup("boy_right_1");
-		right2 = setup("boy_right_2");
+		up1 = setup("/player/boy_up_1");
+		up2 = setup("/player/boy_up_2");
+		down1 = setup("/player/boy_down_1");
+		down2 = setup("/player/boy_down_2");
+		left1 = setup("/player/boy_left_1");
+		left2 = setup("/player/boy_left_2");
+		right1 = setup("/player/boy_right_1");
+		right2 = setup("/player/boy_right_2");
 
 	}
-		
+	}
+
 	public BufferedImage setup(String imageName) {
 		UtilityTool uTool = new UtilityTool();
 		BufferedImage image = null;
-		
+
 		try {
 			image = ImageIO.read(getClass().getResourceAsStream("/player/" + imageName + ".png"));
 			image = uTool.scaleImage(image, gp.tileSize, gp.tileSize);
@@ -89,10 +81,10 @@ public class Player extends Entity implements Drawable{
 			e.printStackTrace();
 		}
 		return image;
-	
+
 	}
-	
-	
+
+
 	public void update() {
 		//update method to check for key press or for no press, also alternates every few tics
 		if(keyH.upPressed == true | keyH.downPressed == true | keyH.leftPressed == true | keyH.rightPressed == true) {
