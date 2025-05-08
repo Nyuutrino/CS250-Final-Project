@@ -32,12 +32,13 @@ public class GamePanel extends JPanel{
 
 	public CollisionChecker cChecker = new CollisionChecker(this);
 	public SuperObject obj[] = new SuperObject[10];
-//	public AssetSetter aSetter = new AssetSetter(this);
 	public MapGen mapGen;
 	KeyHandler keyH = new KeyHandler();
 	public UI ui = new UI(this);
 	Thread gameThread;
 	public Player player = new Player(this,keyH);
+	//Number of keys to place
+	public int keyCount = 5;
 
 	//FPS & time management systems
 	int fps = GameConfig.fps;
@@ -57,7 +58,7 @@ public class GamePanel extends JPanel{
 //		aSetter.setObject();
 		//Create map
 		//TODO: integrate with key number stored somewhere in the project
-		mapGen = new MapGen(0, 0, maxWorldRow, maxWorldRow, 5);
+		mapGen = new MapGen(0, 0, maxWorldRow, maxWorldRow, keyCount);
 		long seed = 12345;
 		mapGen.genMap(seed);
 	}
