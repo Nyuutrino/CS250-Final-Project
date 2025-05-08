@@ -17,7 +17,7 @@ public abstract class Corridor extends Barrier implements Nodes {
 	}
 
 	/**
-	 * Returns the midpoint of the corridor.
+	 * Returns the midpoint of the corridor (tile-based).
 	 * @return The point containing the tile coordinates of the midpoint
 	 */
 	public Point getMidpoint(){

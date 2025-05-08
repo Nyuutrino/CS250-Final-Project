@@ -8,6 +8,7 @@ package barrier;
 import java.awt.*;
 
 import barrierNodes.Node;
+import camera.Camera;
 import direction.Direction;
 import game.GameConfig;
 
@@ -127,59 +128,8 @@ public class Corner extends Corridor {
 	public void draw(Graphics2D g2) {
 		//Walls
 		g2.setColor(color);
-		g2.fillRect(walls[0].x, walls[0].y, walls[0].width, walls[0].height);
-		g2.fillRect(walls[1].x, walls[1].y, walls[1].width, walls[1].height);
-
-		//Debug mode stuff
-		if (!GameConfig.debug) return;
-		//Guiding lines
-		int startTX = tileX, startTY = tileY;
-		int width = 0, height = 0;
-		if (dir.getDirection() == Direction.NORTH) {
-			startTY -= tileWidth;
-			width = 2;
-			height = tileWidth * GameConfig.tileSize;
-		}
-		if (dir.getDirection() == Direction.SOUTH) {
-			width = 2;
-			height = tileWidth * GameConfig.tileSize;
-		}
-		if (dir.getDirection() == Direction.EAST) {
-			width = tileWidth * GameConfig.tileSize;
-			height = 2;
-		}
-		if (dir.getDirection() == Direction.WEST) {
-			startTX -= tileWidth;
-			width = tileWidth * GameConfig.tileSize;
-			height = 2;
-		}
-		g2.setColor(Color.GREEN);
-		g2.fillRect(startTX * GameConfig.tileSize, startTY * GameConfig.tileSize, width, height);
-		if (nodes[1].getDirectionInt() == Direction.NORTH) {
-			startTX = nodes[1].getNodeTX();
-			startTY = nodes[1].getNodeTY();
-			width = 2;
-			height = tileWidth * GameConfig.tileSize;
-		}
-		if (nodes[1].getDirectionInt() == Direction.SOUTH) {
-			startTX = nodes[1].getNodeTX();
-			startTY = nodes[1].getNodeTY() - tileWidth;
-			width = 2;
-			height = tileWidth * GameConfig.tileSize;
-		}
-		if (nodes[1].getDirectionInt() == Direction.EAST) {
-			startTX = nodes[1].getNodeTX() - tileWidth;
-			startTY = nodes[1].getNodeTY();
-			width = tileWidth * GameConfig.tileSize;
-			height = 2;
-		}
-		if (nodes[1].getDirectionInt() == Direction.WEST) {
-			startTX = nodes[1].getNodeTX();
-			startTY = nodes[1].getNodeTY();
-			width = tileWidth * GameConfig.tileSize;
-			height = 2;
-		}
-		g2.fillRect(startTX * GameConfig.tileSize, startTY * GameConfig.tileSize, width, height);
+		Camera.fillRect(walls[0].x, walls[0].y, walls[0].width, walls[0].height, g2);
+		Camera.fillRect(walls[1].x, walls[1].y, walls[1].width, walls[1].height, g2);
 	}
 	
 	public Node[] getAvailableNodes() {
@@ -219,5 +169,15 @@ public class Corner extends Corridor {
 
 	public boolean isColliding(Rectangle rect) {
 		return walls[0].intersects(rect) || walls[1].intersects(rect);
+	}
+
+	@Override
+	public Rectangle getIntersection(Rectangle rect) {
+		if (rect.intersects(walls[0])) {
+			return walls[0].intersection(rect);
+		}
+		else
+			//If it doesn't intersect wall 0 or 1, it will return an empty rectangle anyways.
+			return walls[1].intersection(rect);
 	}
 }

@@ -9,16 +9,19 @@ import barrier.*;
 import barrierNodes.Node;
 import direction.Direction;
 import game.GameConfig;
+import object.Door;
+import object.Key;
 
 import java.awt.*;
 import java.util.*;
 
 /**
+ *
  * Refer to MapGen.md for details on how map generation is going to work
  */
 
 public class MapGen {
-	private final int vertCount, horizCount;
+	private final int vertCount, horizCount, numKeys;
 	private final Point tileStart, tileEnd, startPoint, endPoint;
 	private Map map;
 	private int taxicabDistance;
@@ -27,7 +30,9 @@ public class MapGen {
 	private ArrayList<Corridor> corridors = new ArrayList<>();
 	//Corresponding points marking the corridors
 	private ArrayList<Point> corridorPts = new ArrayList<>();
-	private Corridor startCorridor, endCorridor;
+	private Corridor startCorridor;
+	//Keys in the map
+	private ArrayList<Key> keys = new ArrayList<>();
 
 	/**
 	 * Initializes the map generation class
@@ -35,20 +40,21 @@ public class MapGen {
 	 * @param tileYStart The tile y position to start at
 	 * @param vertCount The number of vertical grid points spanning 2 tiles each (e.g: a vertCount of 8 spans 2 * 8 = 16 tiles)
 	 * @param horizCount The number of horizontal grid points 2 tiles each (e.g: a vertCount of 10 spans 2 * 10 = 20 tiles)
+	 * @param numKeys The number of keys to put on the map.
 	 */
-	public MapGen(int tileXStart, int tileYStart, int vertCount, int horizCount) {
+	public MapGen(int tileXStart, int tileYStart, int vertCount, int horizCount, int numKeys) {
 		//NOTE: Each box will be 2x2 tiles (corner, hallway, etc.). This is to keep consistent with the map. We need to account for that
 		this.tileStart = new Point(tileXStart, tileYStart);
 		this.tileEnd = new Point(tileXStart + 2 * (horizCount - 1), tileYStart + 2 * (vertCount - 1));
 		this.vertCount = vertCount;
 		this.horizCount = horizCount;
+		this.numKeys = numKeys;
 		this.map = new Map(vertCount, horizCount);
 		//For now, the start will always be at the top right and the end will always be at the bottom left
 		startPoint = new Point(tileStart.x, tileStart.y);
 		endPoint = new Point(tileEnd.x, tileEnd.y);
 		//Calculate taxicab distance
 		taxicabDistance = vertCount + horizCount;
-
 		if (!GameConfig.debug) return;
 		//Debug stuff
 		System.out.printf("Taxicab Distance: %d\n", taxicabDistance);
@@ -117,9 +123,8 @@ public class MapGen {
 
 		//Make the corridors
 
-		//Make the start & end points
+		//Make the start point
 		Corridor start;
-		Corridor end;
 		if (map.getIntersection(new Point(0, 0)) == 3)
 			start = new ThreeWay(this.tileStart.x, this.tileStart.y, new Direction(Direction.EAST), ThreeWay.BRANCH_SR);
 		else {
@@ -136,34 +141,15 @@ public class MapGen {
 			}
 			start = new Hallway(this.tileStart.x, this.tileStart.y, 2, dir);
 		}
-		if (map.getIntersection(new Point(horizCount - 1, vertCount - 1)) == 3) {
-			end = new ThreeWay(this.tileEnd.x, this.tileEnd.y, new Direction(Direction.EAST), ThreeWay.BRANCH_SL);
-		}
-		else {
-			//All the branches should be starting from 1 direction. Just check the first
-			Branch b = branches[0];
-			Direction dir;
-			if (b.getPoint(b.getNumPoints() - 1).x == this.horizCount - 1) {
-				//Direction is east
-				dir = new Direction(Direction.EAST);
-			}
-			else {
-				//South
-				dir = new Direction(Direction.SOUTH);
-			}
-			end = new Hallway(this.tileEnd.x, this.tileEnd.y, 2, dir);
-		}
 
 		//Add start to the corridors list.
 		corridors.add(start);
 		corridorPts.add(new Point(0, 0));
-		//Add dead-end to both start & end corridors
-		//TODO replace dead-end with door for the end corridor
+		//Add dead-end & door
 		caps[0] = new DeadEnd(start, start.getAvailableNodes()[0]);
-		caps[1] = new DeadEnd(end, end.getAvailableNodes()[1]);
-		//Add start & end corridors to the start & end corridor fields
+		caps[1] = new Door(tileEnd.x, tileEnd.y - 1, new Direction(Direction.EAST));
+		//Add start corridor to the start
 		startCorridor = start;
-		endCorridor = end;
 
 		//Add the rest of the corridors
 		for (int i = 0; i < numBranches; ++i) {
@@ -176,7 +162,6 @@ public class MapGen {
 					if (cPt.equals(pt)) {
 						continue bLoop;
 					}
-
 				}
 
 				//Make the corridor & attach to any corridors
@@ -296,9 +281,21 @@ public class MapGen {
 			}
 		}
 
-		//Add the end corridor
-		corridors.add(end);
-		corridorPts.add(new Point(horizCount - 1, vertCount - 1));
+		//Add keys. Should be at least 10 tiles away from the start in either direction.
+		int keysAdded = 0;
+		while (keysAdded < numKeys) {
+			//Choose a random corridor
+			int randCorIndx = rand.nextInt(corridors.size());
+			//Check if the corridor's distance are at least 10 away from the start
+			Point randCorPt = corridorPts.get(randCorIndx);
+			int distance = randCorPt.x + randCorPt.y;
+			if (distance < 10) continue;
+			//Get the midpoint of that corridor and add it
+			Corridor randCor = corridors.get(randCorIndx);
+			Point midPt = randCor.getMidpoint();
+			keys.add(new Key(midPt.x, midPt.y, new Direction(Direction.EAST)));
+			keysAdded++;
+		}
 	}
 
 	/**
@@ -315,18 +312,20 @@ public class MapGen {
 	}
 
 	/**
-	 * Returns the start corridor
-	 * @return the end corridor
+	 * Returns the map keys
+	 * @return the keys in the map
 	 */
-	public Corridor getStartCorridor() {
-		return startCorridor;
+	public Key[] getKeys(){
+		Key[] keyArr = keys.toArray(new Key[0]);
+		return keyArr;
 	}
 
 	/**
-	 * Returns the end corridor
-	 * @return the end corridor
+	 * Removes a key from the map keys
+	 * @param key The key to remove
 	 */
-	public Corridor getEndCorridor() {
-		return endCorridor;
+	public void removeKey(Key key) {
+		keys.remove(key);
 	}
+
 }

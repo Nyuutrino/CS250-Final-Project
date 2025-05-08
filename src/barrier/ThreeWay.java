@@ -6,9 +6,9 @@
 package barrier;
 
 import barrierNodes.Node;
+import camera.Camera;
 import direction.Direction;
 import game.GameConfig;
-
 import java.awt.*;
 
 public class ThreeWay extends Corridor{
@@ -179,40 +179,7 @@ public class ThreeWay extends Corridor{
 	public void draw(Graphics2D g2) {
 		//Wall
 		g2.setColor(color);
-		g2.fillRect(wall.x, wall.y, wall.width, wall.height);
-		//Draw the debug stuff if debug mode is enabled
-		if (!GameConfig.debug) return;
-		g2.setColor(Color.GREEN);
-		g2.setStroke(new BasicStroke(2));
-
-		//Guiding lines
-		if (branchConfig == BRANCH_LR) {
-			int lineX = (dir.getDirection() == Direction.NORTH || dir.getDirection() == Direction.SOUTH) ? x : nodes[1].getNodeX();
-			int lineY = (dir.getDirection() == Direction.EAST || dir.getDirection() == Direction.WEST) ? y : nodes[1].getNodeY();
-			g2.drawLine(x, y, lineX, lineY);
-			g2.drawLine(nodes[1].getNodeX(), nodes[1].getNodeY(), nodes[2].getNodeX(), nodes[2].getNodeY());
-		}
-		else if (branchConfig == BRANCH_SL) {
-			g2.drawLine(x, y, nodes[1].getNodeX(), nodes[1].getNodeY());
-			int lineX = (dir.getDirection() == Direction.NORTH || dir.getDirection() == Direction.SOUTH) ? x : (nodes[0].getNodeX() + nodes[1].getNodeX()) / 2;
-			int lineY = (dir.getDirection() == Direction.NORTH || dir.getDirection() == Direction.SOUTH) ? (nodes[0].getNodeY() + nodes[1].getNodeY()) / 2 : y;
-			g2.drawLine(nodes[2].getNodeX(), nodes[2].getNodeY(), lineX, lineY);
-		}
-		else {
-			g2.drawLine(x, y, nodes[1].getNodeX(), nodes[1].getNodeY());
-			int lineX = (dir.getDirection() == Direction.NORTH || dir.getDirection() == Direction.SOUTH) ? x : (nodes[0].getNodeX() + nodes[1].getNodeX()) / 2;
-			int lineY = (dir.getDirection() == Direction.NORTH || dir.getDirection() == Direction.SOUTH) ? (nodes[0].getNodeY() + nodes[1].getNodeY()) / 2 : y;
-			g2.drawLine(nodes[2].getNodeX(), nodes[2].getNodeY(), lineX, lineY);
-		}
-
-		//Starting node
-		g2.setColor(Color.RED);
-		g2.fillOval(nodes[0].getNodeX() - 5, nodes[0].getNodeY() - 5, 10, 10);
-
-		//Other two nodes
-		g2.setColor(Color.ORANGE);
-		g2.fillOval(nodes[1].getNodeX() - 5, nodes[1].getNodeY() - 5, 10, 10);
-		g2.fillOval(nodes[2].getNodeX() - 5, nodes[2].getNodeY() - 5, 10, 10);
+		Camera.fillRect(wall.x, wall.y, wall.width, wall.height, g2);
 	}
 
 	public Node[] getAvailableNodes() {
@@ -252,5 +219,10 @@ public class ThreeWay extends Corridor{
 
 	public boolean isColliding(Rectangle rect) {
 		return wall.intersects(rect);
+	}
+
+	@Override
+	public Rectangle getIntersection(Rectangle rect) {
+		return wall.intersection(rect);
 	}
 }

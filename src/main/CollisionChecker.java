@@ -1,6 +1,8 @@
 package main;
 
+import barrier.Barrier;
 import entity.Entity;
+import entity.Player;
 import game.GameConfig;
 
 public class CollisionChecker {
@@ -10,73 +12,17 @@ public class CollisionChecker {
 	public CollisionChecker(GamePanel gp) {
 		this.gp = gp;
 	}
-	
-	public void checkTile(Entity entity) {//checks for solid area
-		int entityLeftWorldX = entity.worldx + entity.solidArea.x;
-		int entityRightWorldX = entity.worldx + entity.solidArea.x + entity.solidArea.width;
-		int entityTopWorldY = entity.worldy + entity.solidArea.y;
-		int entityBottomY = entity.worldy + entity.solidArea.y + entity.solidArea.height;
-		
-		int entityLeftCol = entityLeftWorldX/gp.tileSize; 
-		int entityRightCol = entityRightWorldX/gp.tileSize; 
-		int entityTopRow = entityTopWorldY/gp.tileSize; 
-		int entityBottomRow = entityBottomY/gp.tileSize;
-		
-		int tileNum1 , tileNum2;
-		
-		switch (entity.direction) {
-		case "up":
-			entityTopRow = (entityTopWorldY - entity.speed)/gp.tileSize;
-			tileNum1= gp.tileM.mapTileNum[entityLeftCol][entityTopRow];
-			tileNum2= gp.tileM.mapTileNum[entityRightCol][entityTopRow];
-			
-			if(gp.tileM.tile[tileNum1].collison == true || gp.tileM.tile[tileNum2].collison == true){
-				entity.collisionOn = true;
-			}
-			else if(gp.tileM.tile[tileNum1].collison == false || gp.tileM.tile[tileNum2].collison == false){
-				entity.collisionOn = false;
-				}
-			break;
-			
-		case "down":
-			entityBottomRow = (entityBottomY - entity.speed)/gp.tileSize;
-			tileNum1= gp.tileM.mapTileNum[entityLeftCol][entityBottomRow];
-			tileNum2= gp.tileM.mapTileNum[entityRightCol][entityBottomRow];
-			
-			if(gp.tileM.tile[tileNum1].collison == true || gp.tileM.tile[tileNum2].collison == true){
-				entity.collisionOn = true;
-			}
-			else if(gp.tileM.tile[tileNum1].collison == false || gp.tileM.tile[tileNum2].collison == false){
-				entity.collisionOn = false;
-				}
-			break;
-		case "left":
-			entityLeftCol = (entityLeftWorldX - entity.speed)/gp.tileSize;
-			tileNum1= gp.tileM.mapTileNum[entityLeftCol][entityTopRow];
-			tileNum2= gp.tileM.mapTileNum[entityLeftCol][entityBottomRow];
-			
-			if(gp.tileM.tile[tileNum1].collison == true || gp.tileM.tile[tileNum2].collison == true){
-				entity.collisionOn = true;
-			}
-			else if(gp.tileM.tile[tileNum1].collison == false || gp.tileM.tile[tileNum2].collison == false){
-				entity.collisionOn = false;
-				}
-			break;
-		case "right":
-			entityRightCol = (entityRightWorldX - entity.speed)/gp.tileSize;
-			tileNum1= gp.tileM.mapTileNum[entityRightCol][entityTopRow];
-			tileNum2= gp.tileM.mapTileNum[entityRightCol][entityBottomRow];
-			
-			if(gp.tileM.tile[tileNum1].collison == true || gp.tileM.tile[tileNum2].collison == true){
-				entity.collisionOn = true;
-			}
-			else if(gp.tileM.tile[tileNum1].collison == false || gp.tileM.tile[tileNum2].collison == false){
-				entity.collisionOn = false;
-				}
-			break;
+
+	/**
+	 * Checks if player is colliding with a barrier
+	 * @param player The player object
+	 */
+	public boolean checkBarrier(Player player) {
+		//Check if any barrier is colliding with the player
+		for (Barrier b : gp.mapGen.getBarriers()){
+			if (b.isColliding(player.solidArea)) return true;
 		}
-		
-		
+		return false;
 	}
 	
 	//method that specifically checks for object location, uses the same logic as other collision detection, but much smaller
@@ -92,8 +38,8 @@ public class CollisionChecker {
 				entity.solidArea.y = entity.worldy + entity.solidAreaDefaultY;
 				
 				//get object position
-				gp.obj[i].solidArea.x = gp.obj[i].worldx + gp.obj[i].solidArea.x;
-				gp.obj[i].solidArea.y = gp.obj[i].worldy + gp.obj[i].solidArea.y;
+//				gp.obj[i].solidArea.x = gp.obj[i].worldx + gp.obj[i].solidArea.x;
+//				gp.obj[i].solidArea.y = gp.obj[i].worldy + gp.obj[i].solidArea.y;
 				
 				switch(entity.direction) {
 				case"up":

@@ -7,13 +7,20 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
+import barrier.Barrier;
+import camera.Camera;
+import game.GameConfig;
+import main.CollisionChecker;
 import main.GamePanel;
 import main.KeyHandler;
 import main.UtilityTool;
 import game.Drawable;
+import object.Door;
+import object.Key;
 
 public class Player extends Entity implements Drawable{
 	
@@ -25,32 +32,36 @@ public class Player extends Entity implements Drawable{
 	public final int screenX;
 	public final int screenY;
 	public int hasKeys = 0;
+	//Used to detect collision
+	private Rectangle collisionBox;
 	
 	public Player(GamePanel gp, KeyHandler keyH) {
 		this.gp = gp;
 		this.keyH = keyH;
-		
-		screenX = gp.screenWidth/2 -(gp.tileSize/2);
-		screenY= gp.screenHeight/2 -(gp.tileSize/2);
+
+		screenX = gp.screenWidth/2 - (gp.tileSize/2);
+		screenY = gp.screenHeight/2 - (gp.tileSize/2);
 		
 		solidArea = new Rectangle();
 		solidArea.x = 8;
 		solidArea.y = 16;
-		solidArea.width = 32;
-		solidArea.height = 32;
+		solidArea.width = GameConfig.tileSize;
+		solidArea.height = GameConfig.tileSize;
 		
-		solidAreaDefaultX =solidArea.x;
+		solidAreaDefaultX = solidArea.x;
 		solidAreaDefaultY = solidArea.y;
-		
+
 		setDefaultValues();
 		getPlayerImage();
 	}
 	public void setDefaultValues() {
 		//method to set the player start location as well as the starting direction of the sprite
-		worldx = gp.tileSize* 10;
-		worldy= gp.tileSize * 10;
-		speed= 4; //amount pixels moved
+		//Note: coordinates are based on the image center
+		worldx = 0;
+		worldy = 0;
+		speed = 10; //amount pixels moved
 		direction = "down";
+		collisionBox = new Rectangle(0, 0, 0, 0);
 	}
 	
 	public void getPlayerImage() {
@@ -79,7 +90,7 @@ public class Player extends Entity implements Drawable{
 		}
 		return image;
 	
-	}	
+	}
 	
 	
 	public void update() {
@@ -107,53 +118,84 @@ public class Player extends Entity implements Drawable{
 			direction = "right";}
 		else 
 			direction = "standing";
-		
-		//collision check
-		collisionOn = false;
-		gp.cChecker.checkTile(this);
-		
-		//object collision
-		int objIndex = gp.cChecker.checkObject(this, true);
-		pickUpObject(objIndex);
-		
-		//if false
-		if(collisionOn == false) {
-			
-			switch(direction) {
-			
-				case "up": worldy -= speed; break;
-				case "down": worldy+= speed; break;
-				case "left": worldx -= speed; break;
-				case "right": worldx += speed; break;
-			}
-		}
-		}
-	
-		//method that checks for a object name, and an index, then removes or allows for interaction with that item
-	public void pickUpObject(int i) {
 
-		if(i != 999) {
-			String objectName = gp.obj[i].name;
-			switch(objectName) {
-			case "key":
-				gp.obj[i] = null;
+		//Collision check
+		//Easiest way is to use the collision box and see if it collides with an object. If so, check what that object is and react accordingly
+		//Make the collision box face in the direction the player will move
+		int xOffset = 0;
+		int yOffset = 0;
+		int width = 1;
+		int height = 1;
+		if (direction.equals("left")){
+			xOffset = solidArea.width / 2 + speed;
+			width = solidArea.width / 2 + speed;
+		}
+		else if (direction.equals("right")) width = solidArea.width / 2 + speed;
+		if (direction.equals("up")){
+			yOffset = solidArea.height / 2 + speed;
+			height = solidArea.height / 2 + speed;
+		}
+		else if (direction.equals("down")) height = solidArea.height / 2 + speed;
+		collisionBox = new Rectangle(worldx - xOffset, worldy - yOffset, width, height);
+
+		//Save for later
+		Door door = null;
+		//Check for collision with barriers
+		Barrier[] barriers = gp.mapGen.getBarriers();
+		for (Barrier b : barriers) {
+			if (b.isColliding(collisionBox) && !(b instanceof Door)) {
+				//It will collide, so calculate where we can move
+				Rectangle intersection = b.getIntersection(collisionBox);
+				if (direction.equals("left"))
+					worldx = (int) intersection.getMaxX() + solidArea.width / 2;
+				else if (direction.equals("right"))
+					worldx = (int)intersection.getMinX() - solidArea.width / 2;
+				else if (direction.equals("up"))
+					worldy = (int)intersection.getMinY() + solidArea.height / 2;
+				else if (direction.equals("down"))
+					worldy = (int)intersection.getMaxY() - solidArea.height / 2;
+			}
+			//TODO: calculate collision for door
+			if (b instanceof Door) door = (Door)b;
+		}
+		//Move the player
+		switch (direction) {
+			case "up":
+				worldy -= speed;
+				break;
+			case "down":
+				worldy += speed;
+				break;
+			case "left":
+				worldx -= speed;
+				break;
+			case "right":
+				worldx += speed;
+				break;
+		}
+
+		//Reset collision box
+		collisionBox = new Rectangle(worldx - solidArea.width / 2, worldy - solidArea.height / 2, solidArea.width, solidArea.height);
+
+		//Now check for collisions with objects
+
+		//Keys
+		Key keys[] = gp.mapGen.getKeys();
+		for (Key k : keys) {
+			if (k.isColliding(collisionBox)) {
 				hasKeys++;
 				gp.ui.showMessage("You got a key!");
-				break;
-				
-			case "door":
-				if(hasKeys > 1) {
-					gp.obj[i] = null;
-					hasKeys --;
-					gp.ui.gameFinished = true;
-				}
-				else
-					gp.ui.showMessage("You dont have enough Keys!");
-				break;
+				gp.mapGen.removeKey(k);
+				return;
 			}
-			
 		}
-		
+
+		//Door
+		if (door.isColliding(collisionBox)) {
+
+		}
+		//Update camera position
+		Camera.updateCameraPos();
 	}
 	
 	public void draw(Graphics2D g2) {
@@ -175,13 +217,13 @@ public class Player extends Entity implements Drawable{
 				image = down2;
 			break;
 		case "left":
-			if (spriteNum ==1)
+			if (spriteNum == 1)
 				image = left1;
-			if (spriteNum ==2)
+			if (spriteNum == 2)
 				image = left2;
 			break;
 		case "right":
-			if (spriteNum ==1)
+			if (spriteNum == 1)
 				image = right1;
 			if (spriteNum ==2)
 				image = right2;
@@ -190,6 +232,6 @@ public class Player extends Entity implements Drawable{
 			image = down1;
 		}
 		g2.drawImage(image, screenX, screenY,null);
-		
+		g2.setColor(Color.WHITE);
 	}
 }

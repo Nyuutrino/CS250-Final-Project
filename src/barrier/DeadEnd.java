@@ -6,6 +6,7 @@
 package barrier;
 
 import barrierNodes.Node;
+import camera.Camera;
 import direction.Direction;
 import game.GameConfig;
 
@@ -66,15 +67,19 @@ public class DeadEnd extends Barrier {
 		DeadEndConstruct();
 	}
 
-	@Override
 	public void draw(Graphics2D g2) {
 		//Wall
 		g2.setColor(color);
-		g2.fillRect(wall.x, wall.y, wall.width, wall.height);
+		Camera.fillRect(wall.x, wall.y, wall.width, wall.height, g2);
 	}
 
 	@Override
 	public boolean isColliding(Rectangle rect) {
 		return wall.intersects(rect);
+	}
+
+	@Override
+	public Rectangle getIntersection(Rectangle rect) {
+		return wall.intersection(rect);
 	}
 }

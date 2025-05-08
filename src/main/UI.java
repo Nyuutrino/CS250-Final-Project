@@ -6,7 +6,8 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 
-import object.OBJ_Key;
+import direction.Direction;
+import object.Key;
 
 public class UI {
 	Font arial_40;
@@ -25,7 +26,7 @@ public class UI {
 		this.gp = gp;
 		arial_40 = new Font("Arial", Font.PLAIN, 40);
 		arial_80 = new Font("Arial", Font.BOLD, 80);
-		OBJ_Key key = new OBJ_Key(gp);
+		Key key = new Key(0, 0, new Direction(Direction.EAST));
 		keyImage = key.image;
 	}
 	

@@ -20,4 +20,9 @@ public interface Collidable {
 	 * @return True if colliding, false if not
 	 */
 	public boolean isColliding(Rectangle rect);
+
+	/**
+	 * Calculates the intersection of two rectangles.
+	 */
+	public Rectangle getIntersection(Rectangle rect);
 }

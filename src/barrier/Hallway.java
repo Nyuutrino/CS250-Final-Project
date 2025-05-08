@@ -8,6 +8,7 @@ package barrier;
 import java.awt.*;
 
 import barrierNodes.Node;
+import camera.Camera;
 import direction.Direction;
 import game.GameConfig;
 
@@ -90,33 +91,10 @@ public class Hallway extends Corridor {
 	}
 
 	public void draw(Graphics2D g2) {
-		//TODO: Arrows representing direction?
 		//Walls
 		g2.setColor(color);
-		g2.fillRect(walls[0].x, walls[0].y, walls[0].width, walls[0].height);
-		g2.fillRect(walls[1].x, walls[1].y, walls[1].width, walls[1].height);
-
-		//Debug mode stuff
-		if (!GameConfig.debug) return;
-		//Guiding lines
-		int startX = x;
-		int startY = y;
-		if (dir.getDirection() == Direction.NORTH)
-			startY -= len * GameConfig.tileSize;
-		if (dir.getDirection() == Direction.WEST)
-			startX -= len * GameConfig.tileSize;
-		int width = 0;
-		int height = 0;
-		if (dir.getDirection() == Direction.SOUTH || dir.getDirection() == Direction.NORTH) {
-			width = 2;
-			height = len * GameConfig.tileSize;
-		}
-		if (dir.getDirection() == Direction.EAST || dir.getDirection() == Direction.WEST) {
-			width = len * GameConfig.tileSize;
-			height = 2;
-		}
-		g2.setColor(Color.GREEN);
-		g2.fillRect(startX, startY, width, height);
+		Camera.fillRect(walls[0].x, walls[0].y, walls[0].width, walls[0].height, g2);
+		Camera.fillRect(walls[1].x, walls[1].y, walls[1].width, walls[1].height, g2);
 	}
 
 	public Node[] getAvailableNodes() {
@@ -154,6 +132,16 @@ public class Hallway extends Corridor {
 
 	public boolean isColliding(Rectangle rect) {
 		return walls[0].intersects(rect) || walls[1].intersects(rect);
+	}
+
+	@Override
+	public Rectangle getIntersection(Rectangle rect) {
+		if (rect.intersects(walls[0])) {
+			return walls[0].intersection(rect);
+		}
+		else
+			//If it doesn't intersect wall 0 or 1, it will return an empty rectangle anyways.
+			return walls[1].intersection(rect);
 	}
 
 	@Override

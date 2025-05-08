@@ -70,48 +70,6 @@ public class FourWay extends Corridor {
 	@Override
 	public void draw(Graphics2D g2) {
 		// Since the four way has 4 openings, we currently don't need to draw anything.
-		//Nevertheless, we'll draw the debug stuff if debug mode is enabled
-		if (!GameConfig.debug) return;
-		//Guiding lines
-		int startTX1 = tileX, startTY1 = tileY, startTX2 = tileX, startTY2 = tileY;
-		int width1 = 0, height1 = 0, width2 = 0, height2 = 0;
-		if (dir.getDirection() == Direction.NORTH) {
-			startTY1 -= tileWidth * 2;
-			width1 = 2;
-			height1 = (tileWidth * 2) * GameConfig.tileSize;
-			startTX2 -= tileWidth;
-			startTY2 -= tileWidth;
-			height2 = 2;
-			width2 = (tileWidth * 2) * GameConfig.tileSize;
-		}
-		if (dir.getDirection() == Direction.SOUTH) {
-			width1 = 2;
-			height1 = (tileWidth * 2) * GameConfig.tileSize;
-			startTX2 -= tileWidth;
-			startTY2 += tileWidth;
-			height2 = 2;
-			width2 = (tileWidth * 2) * GameConfig.tileSize;
-		}
-		if (dir.getDirection() == Direction.EAST) {
-			width1 = (tileWidth * 2) * GameConfig.tileSize;
-			height1 = 2;
-			startTX2 += tileWidth;
-			startTY2 -= tileWidth;
-			width2 = 2;
-			height2 = (tileWidth * 2) * GameConfig.tileSize;
-		}
-		if (dir.getDirection() == Direction.WEST) {
-			startTX1 -= tileWidth * 2;
-			width1 = (tileWidth * 2) * GameConfig.tileSize;
-			height1 = 2;
-			startTX2 -= tileWidth;
-			startTY2 -= tileWidth;
-			width2 = 2;
-			height2 = (tileWidth * 2) * GameConfig.tileSize;
-		}
-		g2.setColor(Color.GREEN);
-		g2.fillRect(startTX1 * GameConfig.tileSize, startTY1 * GameConfig.tileSize, width1, height1);
-		g2.fillRect(startTX2 * GameConfig.tileSize, startTY2 * GameConfig.tileSize, width2, height2);
 	}
 
 	public Node[] getAvailableNodes() {
@@ -154,4 +112,9 @@ public class FourWay extends Corridor {
 		return false;
 	}
 
+	@Override
+	public Rectangle getIntersection(Rectangle rect) {
+		//No intersection since there's no walls
+		return new Rectangle(0, 0, 0, 0);
+	}
 }
