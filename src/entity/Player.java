@@ -192,16 +192,16 @@ public class Player extends Entity implements Drawable{
 
 		//Door
 		if (door.isColliding(collisionBox)) {
-
+			if (hasKeys == gp.keyCount)
+				gp.ui.showMessage("You won!");
+			else
+				gp.ui.showMessage("\"I don't have enough keys...\"");
 		}
 		//Update camera position
 		Camera.updateCameraPos();
 	}
 	
 	public void draw(Graphics2D g2) {
-		//g2.setColor(Color.blue);
-		//g2.fillRect(x, y, gp.tileSize, gp.tileSize);
-		
 		BufferedImage image = null;
 		switch (direction) {
 		case "up":
