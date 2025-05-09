@@ -19,6 +19,8 @@ import java.io.IOException;
 public class Enemy extends Entity implements Collidable {
 	//Used to detect collision
 	private Rectangle collisionBox;
+	//Images
+	private BufferedImage up, down, left, right;
 	public Enemy (GamePanel gp) {
 		super(gp);
 		solidArea = new Rectangle();
@@ -41,14 +43,11 @@ public class Enemy extends Entity implements Collidable {
 	public void getPlayerImage() {
 		//images for movement, 1 and 2 allow for simple animation loop
 		//buffered in setup
-		up1 = setup("boy_up_1");
-		up2 = setup("boy_up_2");
-		down1 = setup("boy_down_1");
-		down2 = setup("boy_down_2");
-		left1 = setup("boy_left_1");
-		left2 = setup("boy_left_2");
-		right1 = setup("boy_right_1");
-		right2 = setup("boy_right_2");
+		up = setup("ghost_up");
+		down = setup("ghost_down");
+		left = setup("ghost_left");
+		right = setup("ghost_right");
+
 	}
 
 	public BufferedImage setup(String imageName) {
@@ -56,7 +55,7 @@ public class Enemy extends Entity implements Collidable {
 		BufferedImage image = null;
 
 		try {
-			image = ImageIO.read(getClass().getResourceAsStream("/player/" + imageName + ".png"));
+			image = ImageIO.read(getClass().getResourceAsStream("/enemy/" + imageName + ".png"));
 			image = uTool.scaleImage(image, GameConfig.tileSize, GameConfig.tileSize);
 		}catch(IOException e){
 			e.printStackTrace();
@@ -65,6 +64,7 @@ public class Enemy extends Entity implements Collidable {
 	}
 
 	public void update() {
+		direction = "standing";
 		//Catch up to the player
 
 		//Calculate angle between player and enemy
@@ -83,34 +83,31 @@ public class Enemy extends Entity implements Collidable {
 		worldx += x;
 		worldy += y;
 		collisionBox.translate(x, y);
+		//Change direction as well
+		if (x > 0 && x >= Math.abs(y))
+			direction = "right";
+		if (x < 0 && Math.abs(x) >= Math.abs(y))
+			direction = "left";
+		if (y > 0 && y >= Math.abs(x))
+			direction = "down";
+		if (y < 0 && Math.abs(y) >= Math.abs(x))
+			direction = "up";
 	}
 
 	public void draw(Graphics2D g2) {
 		BufferedImage image = null;
 		switch (direction) {
 			case "up":
-				if (spriteNum ==1)
-					image = up1;
-				if (spriteNum ==2)
-					image = up2;
+				image = up;
 				break;
 			case "down":
-				if (spriteNum ==1)
-					image = down1;
-				if (spriteNum ==2)
-					image = down2;
+				image = down;
 				break;
 			case "left":
-				if (spriteNum == 1)
-					image = left1;
-				if (spriteNum == 2)
-					image = left2;
+				image = left;
 				break;
 			case "right":
-				if (spriteNum == 1)
-					image = right1;
-				if (spriteNum ==2)
-					image = right2;
+				image = right;
 				break;
 			case "standing":
 				image = down1;

@@ -63,39 +63,33 @@ public class KeyHandler implements KeyListener{
 			if (code == KeyEvent.VK_D) {
 				rightPressed = true;
 			}
-			//Pause button
-			if (code == KeyEvent.VK_P) {
-				if(gp.gameState == gp.playState) {
-					gp.gameState = gp.pauseState;
-				}
-				else if (gp.gameState == gp.pauseState) {
-					gp.gameState = gp.playState;
-				}
+		}
+		//Pause button
+		if (code == KeyEvent.VK_P) {
+			if(gp.gameState == gp.playState) {
+				gp.gameState = gp.pauseState;
+			}
+			else if (gp.gameState == gp.pauseState) {
+				gp.gameState = gp.playState;
 			}
 		}
 
 		//Loss state
 		if(gp.gameState == gp.lossState) {
-			if (code == KeyEvent.VK_W) {
-				gp.ui.commandNum --;
-				if (gp.ui.commandNum < 0)
-					gp.ui.commandNum = 1;
-			}
-
-			if (code == KeyEvent.VK_S) {
-				downPressed = true;
-				gp.ui.commandNum ++;
-				if (gp.ui.commandNum > 1)
-					gp.ui.commandNum = 0;
-			}
+//			if (code == KeyEvent.VK_W) {
+//				gp.ui.commandNum--;
+//				if (gp.ui.commandNum < 0)
+//					gp.ui.commandNum = 1;
+//			}
+//
+//			if (code == KeyEvent.VK_S) {
+//				downPressed = true;
+//				gp.ui.commandNum ++;
+//				if (gp.ui.commandNum > 1)
+//					gp.ui.commandNum = 0;
+//			}
 			if (code == KeyEvent.VK_ENTER) {
-				if (gp.ui.commandNum == 0) {
-					gp.gameState = gp.playState;
-					gp.playMusic(0);
-				}
-				if (gp.ui.commandNum == 1) {
-					System.exit(0);
-				}
+				System.exit(0);
 			}
 
 		}

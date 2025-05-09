@@ -21,7 +21,7 @@ public class SuperObject extends Barrier implements Collidable {
 	public int solidAreaDefaultX = 0;
 	public int solidAreaDefaultY = 0;
 	UtilityTool uTool = new UtilityTool();
-	private Rectangle location;
+	protected Rectangle location;
 	//Whether to center the image
 	protected boolean center = false;
 

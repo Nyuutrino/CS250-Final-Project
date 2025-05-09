@@ -9,6 +9,7 @@ import barrier.*;
 import barrierNodes.Node;
 import direction.Direction;
 import game.GameConfig;
+import object.Boost;
 import object.Door;
 import object.Key;
 
@@ -21,7 +22,7 @@ import java.util.*;
  */
 
 public class MapGen {
-	private final int vertCount, horizCount, numKeys;
+	private final int vertCount, horizCount, numKeys, numSpeedBoost;
 	private final Point tileStart, tileEnd, startPoint, endPoint;
 	private Map map;
 	private int taxicabDistance;
@@ -33,6 +34,8 @@ public class MapGen {
 	private Corridor startCorridor;
 	//Keys in the map
 	private ArrayList<Key> keys = new ArrayList<>();
+	//Speed boosts in the map
+	private ArrayList<Boost> boosts = new ArrayList<>();
 
 	/**
 	 * Initializes the map generation class
@@ -42,23 +45,20 @@ public class MapGen {
 	 * @param horizCount The number of horizontal grid points 2 tiles each (e.g: a vertCount of 10 spans 2 * 10 = 20 tiles)
 	 * @param numKeys The number of keys to put on the map.
 	 */
-	public MapGen(int tileXStart, int tileYStart, int vertCount, int horizCount, int numKeys) {
+	public MapGen(int tileXStart, int tileYStart, int vertCount, int horizCount, int numKeys, int numSpeedBoost) {
 		//NOTE: Each box will be 2x2 tiles (corner, hallway, etc.). This is to keep consistent with the map. We need to account for that
 		this.tileStart = new Point(tileXStart, tileYStart);
 		this.tileEnd = new Point(tileXStart + 2 * (horizCount - 1), tileYStart + 2 * (vertCount - 1));
 		this.vertCount = vertCount;
 		this.horizCount = horizCount;
 		this.numKeys = numKeys;
+		this.numSpeedBoost = numSpeedBoost;
 		this.map = new Map(vertCount, horizCount);
 		//For now, the start will always be at the top right and the end will always be at the bottom left
 		startPoint = new Point(tileStart.x, tileStart.y);
 		endPoint = new Point(tileEnd.x, tileEnd.y);
 		//Calculate taxicab distance
 		taxicabDistance = vertCount + horizCount;
-		if (!GameConfig.debug) return;
-		//Debug stuff
-		System.out.printf("Taxicab Distance: %d\n", taxicabDistance);
-		System.out.printf("Vert count: %d, Horiz count: %d\n", vertCount, horizCount);
 	}
 
 	/**
@@ -283,11 +283,16 @@ public class MapGen {
 
 		//Add keys. Should be at least 10 tiles away from the start in either direction.
 		int keysAdded = 0;
-		while (keysAdded < numKeys) {
+		keyLp: while (keysAdded < numKeys) {
 			//Choose a random corridor
 			int randCorIndx = rand.nextInt(corridors.size());
 			//Check if the corridor's distance are at least 10 away from the start
 			Point randCorPt = corridorPts.get(randCorIndx);
+			//Check if a key is already there
+			for (Key k : keys) {
+				if (k.getTileX() == randCorPt.x && k.getTileY() == randCorPt.y)
+					continue keyLp;
+			}
 			int distance = randCorPt.x + randCorPt.y;
 			if (distance < 10) continue;
 			//Get the midpoint of that corridor and add it
@@ -295,6 +300,33 @@ public class MapGen {
 			Point midPt = randCor.getMidpoint();
 			keys.add(new Key(midPt.x, midPt.y, new Direction(Direction.EAST)));
 			keysAdded++;
+		}
+
+		//Add a speed boost
+		//Add keys. Should be at least 10 tiles away from the start in either direction.
+		int speedBoost = 0;
+		boostLp: while (speedBoost < numSpeedBoost) {
+			//Choose a random corridor
+			int randCorIndx = rand.nextInt(corridors.size());
+			//Check if the corridor's distance are at least 10 away from the start
+			Point randCorPt = corridorPts.get(randCorIndx);
+			//Check if a key is already there
+			for (Key k : keys) {
+				if (k.getTileX() == randCorPt.x && k.getTileY() == randCorPt.y)
+					continue boostLp;
+			}
+			//Check if a boost is already there
+			for (Boost boost : boosts){
+				if (boost.getTileX() == randCorPt.x && boost.getTileY() == randCorPt.y)
+					continue boostLp;
+			}
+			int distance = randCorPt.x + randCorPt.y;
+			if (distance < 10) continue;
+			//Get the midpoint of that corridor and add it
+			Corridor randCor = corridors.get(randCorIndx);
+			Point midPt = randCor.getMidpoint();
+			boosts.add(new Boost(midPt.x, midPt.y, new Direction(Direction.EAST)));
+			speedBoost++;
 		}
 	}
 
@@ -321,11 +353,27 @@ public class MapGen {
 	}
 
 	/**
+	 * Returns the map speed boosts
+	 */
+	public Boost[] getBoosts(){
+		Boost[] boostArr = boosts.toArray(new Boost[0]);
+		return boostArr;
+	}
+
+	/**
 	 * Removes a key from the map keys
 	 * @param key The key to remove
 	 */
 	public void removeKey(Key key) {
 		keys.remove(key);
+	}
+
+	/**
+	 * Removes a boost from the map boosts
+	 * @param boost the boost to remove
+	 */
+	public void removeBoost(Boost boost) {
+		boosts.remove(boost);
 	}
 
 }

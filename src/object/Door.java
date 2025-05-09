@@ -1,5 +1,6 @@
 package object;
 
+import java.awt.*;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -37,6 +38,10 @@ public class Door extends SuperObject {
 	public Door(int tileX, int tileY, Direction dir) {
 		super(tileX, tileY, dir, 2, 2);
 		doorConstruct();
+	}
+
+	public Rectangle getRect(){
+		return location;
 	}
 }
 

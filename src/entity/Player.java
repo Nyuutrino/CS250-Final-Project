@@ -15,6 +15,7 @@ import main.GamePanel;
 import main.KeyHandler;
 import main.UtilityTool;
 import game.Drawable;
+import object.Boost;
 import object.Door;
 import object.Key;
 
@@ -151,8 +152,17 @@ public class Player extends Entity implements Drawable{
 				else if (direction.equals("down"))
 					worldy = (int)intersection.getMaxY() - solidArea.height / 2;
 			}
-			//TODO: calculate collision for door
 			if (b instanceof Door) door = (Door)b;
+			if (b instanceof Door && door.isColliding(collisionBox)) {
+				//It's colliding with the door. Check if it's past the edge & if so, keep the player from crossing
+				Rectangle doorRect = door.getRect();
+				if (collisionBox.x + collisionBox.width >= doorRect.getMaxX()) {
+					worldx -= speed;
+				}
+				if (collisionBox.y + collisionBox.height >= doorRect.getMaxY()) {
+					worldy -= speed;
+				}
+			}
 		}
 		//Move the player
 		switch (direction) {
@@ -179,7 +189,7 @@ public class Player extends Entity implements Drawable{
 		Key[] keys = gp.mapGen.getKeys();
 		for (Key k : keys) {
 			if (k.isColliding(collisionBox)) {
-				//TODO: sound
+				gp.playSE(2);
 				hasKeys++;
 				gp.ui.showMessage(String.format("Keys: %d/%d", hasKeys, gp.keyCount));
 				gp.mapGen.removeKey(k);
@@ -187,11 +197,23 @@ public class Player extends Entity implements Drawable{
 			}
 		}
 
+		//Boosts
+		Boost[] boosts = gp.mapGen.getBoosts();
+		for (Boost b : boosts) {
+			if (b.isColliding(collisionBox)) {
+				gp.player.speed += 3;
+				gp.ui.showMessage("Speed boost!");
+				gp.mapGen.removeBoost(b);
+				return;
+			}
+		}
+
 		//Door
 		if (door.isColliding(collisionBox)) {
-			if (hasKeys == gp.keyCount)
-				//TODO: play sound
+			if (hasKeys == gp.keyCount) {
+				gp.playSE(4);
 				gp.gameState = gp.completeState;
+			}
 			else
 				gp.ui.showMessage("\"I don't have enough keys...\"");
 		}

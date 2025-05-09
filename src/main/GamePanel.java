@@ -52,6 +52,7 @@ public class GamePanel extends JPanel{
 	public Enemy enemy = new Enemy(this);
 	//Number of keys to place
 	public int keyCount = 5;
+	public int boostCount = 2;
 
 	//FPS & time management systems
 	int fps = GameConfig.fps;
@@ -74,7 +75,7 @@ public class GamePanel extends JPanel{
 	//SETUP OBJECTS NPCs MUSIC AND STATE
 	public void setupGame() {
 		//Create map
-		mapGen = new MapGen(0, 0, maxWorldRow, maxWorldCol, keyCount);
+		mapGen = new MapGen(0, 0, maxWorldRow, maxWorldCol, keyCount, boostCount);
 		long seed = 12345;
 		mapGen.genMap(seed);
 		gameState = titleState;
@@ -89,6 +90,10 @@ public class GamePanel extends JPanel{
 		});
 		//Start timer
 		gameTimer.start();
+	}
+
+	public void stopGameTimer() {
+		gameTimer.stop();
 	}
 
 	public void update() {
@@ -123,6 +128,12 @@ public class GamePanel extends JPanel{
 			Key[] keys = mapGen.getKeys();
 			for (Key k : keys) {
 				k.draw(g2);
+			}
+
+			//Draw boosts
+			Boost[] boosts = mapGen.getBoosts();
+			for (Boost b : boosts) {
+				b.draw(g2);
 			}
 
 			//Draw player
