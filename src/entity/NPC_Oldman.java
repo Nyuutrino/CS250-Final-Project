@@ -26,8 +26,7 @@ public class NPC_Oldman extends Entity{
 		left2 = setup("/npc/oldman_left_2");
 		right1 = setup("/npc/oldman_right_1");
 		right2 = setup("/npc/oldman_right_2");
-
-	}	
+	}
 	
 	public void setActions() {
 		actionLockCounter ++;

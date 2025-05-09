@@ -49,7 +49,7 @@ public class UI {
 				if(messageCounter > 120) {
 					messageOn = false;
 					messageCounter = 0;
-					gp.player.speed = 4;
+					gp.player.speed = gp.player.originalSpeed;
 				}
 			}
 		}

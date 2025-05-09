@@ -7,88 +7,67 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import camera.Camera;
 import main.GamePanel;
 import main.UtilityTool;
 
 public class Entity {
-	
-	
-	public int worldx,worldy;
+
+
+	public int worldx, worldy;
 	public int speed;
-	
+
 	public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
 	public String direction = "down";
-	
+
 	public int spriteCounter = 0;
 	public int spriteNum = 1;
-	
+
 	public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
 	public int solidAreaDefaultX, solidAreaDefaultY;
 	public boolean collisionOn = false;
 	GamePanel gp;
-	
+
 	public int actionLockCounter;
-	
+
 	//OBJECT STUFF
 	public BufferedImage image;
 	public String name;
 	public boolean collision = false;
-	
-	
+
+
 	public Entity(GamePanel gp) {
 		this.gp = gp;
 	}
-	
+
 	public void setActions() {
-		
+
 	}
-	
+
 	public void update() {
 		setActions();
-		
-		collisionOn = false;
-		gp.cChecker.checkTile(this);
-		gp.cChecker.checkObject(this, false);
-		gp.cChecker.checkPlayer(this);
-		
-		if(collisionOn == false) {
-			
-			switch(direction) {
-			
-				case "up": worldy -= speed; break;
-				case "down": worldy+= speed; break;
-				case "left": worldx -= speed; break;
-				case "right": worldx += speed; break;
-			}
+		switch(direction) {
+			case "up": worldy -= speed; break;
+			case "down": worldy+= speed; break;
+			case "left": worldx -= speed; break;
+			case "right": worldx += speed; break;
 		}
-		
+
 		spriteCounter++;
-		if (spriteCounter >12){
+		if (spriteCounter > 12){
 			if(spriteNum == 1) {
 				spriteNum = 2;
 			}
-			else if(spriteNum ==2) {
+			else if(spriteNum == 2) {
 				spriteNum = 1;
 			}
 			spriteCounter = 0;
 		}
-		
-		
 	}
-	
+
 	public void draw(Graphics2D g2) {
 		BufferedImage image = null;
-		int screenX = worldx - gp.player.worldx + gp.player.screenX;
-		int screenY = worldy - gp.player.worldy + gp.player.screenY;
-		
-		
-		//draw the row, only renders the screen
-		if(worldx + gp.tileSize> gp.player.worldx - gp.player.screenX && 
-			worldx - gp.tileSize < gp.player.worldx + gp.player.screenX &&
-			worldy + gp.tileSize> gp.player.worldy - gp.player.screenY &&
-			worldy - gp.tileSize< gp.player.worldy + gp.player.screenY) {
-			
-			switch (direction) {
+		switch (direction) {
 			case "up":
 				if (spriteNum ==1)
 					image = up1;
@@ -115,18 +94,13 @@ public class Entity {
 				break;
 			case "standing":
 				image = down1;
-			}
-			
-			
-			g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
 		}
+		Camera.drawImage(image, worldx, worldy, solidArea.width, solidArea.height, null);
 	}
-	
-	
+
 	public BufferedImage setup(String imagePath) {
 		UtilityTool uTool = new UtilityTool();
 		BufferedImage image = null;
-		
 		try {
 			image = ImageIO.read(getClass().getResourceAsStream(imagePath + ".png"));
 			image = uTool.scaleImage(image, gp.tileSize, gp.tileSize);
@@ -134,7 +108,7 @@ public class Entity {
 			e.printStackTrace();
 		}
 		return image;
-	
+
 	}
 
 }

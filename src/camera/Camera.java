@@ -76,7 +76,6 @@ public class Camera {
 		if(!withinBounds.isEmpty()) {
 			g2.fillRect(withinBounds.x, withinBounds.y, withinBounds.width, withinBounds.height);
 		}
-		g2.drawRect(2, 2, inst.cameraBounds.width - 4, inst.cameraBounds.height - 4);
 	}
 
 	/**

@@ -4,17 +4,17 @@ import java.awt.*;
 
 import javax.swing.*;
 
-import direction.Direction;
-import entity.Entity;
+
 import barrier.*;
 import camera.Camera;
+import entity.Enemy;
 import entity.Player;
 import game.GameConfig;
 import map.MapGen;
 import object.*;
 
 public class GamePanel extends JPanel{
-//SCREEN SETTINGS
+	//SCREEN SETTINGS
 
 	final int orTileSize = GameConfig.orTileSize;
 	final int scale = GameConfig.scale;
@@ -26,8 +26,8 @@ public class GamePanel extends JPanel{
 	public int screenHeight = GameConfig.screenHeight;
 
 	//WORLD SETTINGS
-	public final int maxWorldCol = 30;
-	public final int maxWorldRow = 32;
+	public final int maxWorldCol = GameConfig.maxWorldCol;
+	public final int maxWorldRow = GameConfig.maxWorldRow;
 	public final int worldWidth = tileSize * maxWorldCol;
 	public final int worldHeight = tileSize * maxWorldCol;
 
@@ -44,10 +44,11 @@ public class GamePanel extends JPanel{
 	public CollisionChecker cChecker = new CollisionChecker(this);
 	public SuperObject obj[] = new SuperObject[10];
 	public MapGen mapGen;
-	KeyHandler keyH = new KeyHandler();
+	KeyHandler keyH = new KeyHandler(this);
 	public UI ui = new UI(this);
 	Thread gameThread;
-	public Player player = new Player(this,keyH);
+	public Player player = new Player(this, keyH);
+	public Enemy enemy = new Enemy(this);
 	//Number of keys to place
 	public int keyCount = 5;
 
@@ -57,7 +58,6 @@ public class GamePanel extends JPanel{
 
 	Sound music = new Sound();
 	Sound se = new Sound();
-	Thread gameThread;
 
 	//GAME PANEL
 	public GamePanel() {
@@ -73,8 +73,7 @@ public class GamePanel extends JPanel{
 	//SETUP OBJECTS NPCs MUSIC AND STATE
 	public void setupGame() {
 		//Create map
-		//TODO: integrate with key number stored somewhere in the project
-		mapGen = new MapGen(0, 0, maxWorldRow, maxWorldRow, keyCount);
+		mapGen = new MapGen(0, 0, maxWorldRow, maxWorldCol, keyCount);
 		long seed = 12345;
 		mapGen.genMap(seed);
 		gameState = titleState;
@@ -92,14 +91,10 @@ public class GamePanel extends JPanel{
 	}
 
 	public void update() {
-		player.update();
 
 		if (gameState == playState) {
 			player.update();
-			for(int i = 0; i < npc.length;i++) {
-				if (npc[i] != null) {
-				npc[i].update();}
-				}
+			enemy.update();
 		}
 		if (gameState == pauseState) {
 			//nothing
@@ -132,45 +127,11 @@ public class GamePanel extends JPanel{
 			//Draw player
 			player.draw(g2);
 
+			//Draw enemy
+			enemy.draw(g2);
+
 			//Draw UI
 			ui.draw(g2);
-
-//			//ENTITY LIST TO AVOID BUG
-//			entityList.add(player);
-//			for (int i=0; i < npc.length; i++) {
-//				if (npc[i] != null) {
-//					entityList.add(npc[i]);
-//				}
-//			}
-//
-//			for (int i=0; i < obj.length; i++) {
-//				if (obj[i] != null) {
-//					entityList.add(obj[i]);
-//				}
-//			}
-//
-//			//SORT
-//			Collections.sort(entityList, new Comparator <Entity>() {
-//
-//				@Override
-//				public int compare(Entity e1, Entity e2) {
-//					int result = Integer.compare(e1.worldy, e2.worldy);
-//					return result;
-//				}
-//
-//			});
-//
-//			//DRAWSORTEDLIST
-//			for( int i = 0; i < entityList.size();i++) {
-//				entityList.get(i).draw(g2);
-//			}
-//			//RESETLSIT
-//			for( int i = 0; i < entityList.size();i++) {
-//				entityList.remove(i);
-//			}
-//
-//			//UI
-//			ui.draw(g2);
 
 			g2.dispose();
 		}
@@ -191,11 +152,7 @@ public class GamePanel extends JPanel{
 		se.setFile(i);
 		se.play();
 	}
-
-
-		
-		
-	}
+}
 	
 	
 

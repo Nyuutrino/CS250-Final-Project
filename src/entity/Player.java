@@ -8,10 +8,15 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import barrier.Barrier;
+import camera.Camera;
+import game.GameConfig;
 import main.GamePanel;
 import main.KeyHandler;
 import main.UtilityTool;
 import game.Drawable;
+import object.Door;
+import object.Key;
 
 public class Player extends Entity implements Drawable{
 	
@@ -23,10 +28,12 @@ public class Player extends Entity implements Drawable{
 	public final int screenX;
 	public final int screenY;
 	public int hasKeys = 0;
+	public int originalSpeed = 4;
 	//Used to detect collision
 	private Rectangle collisionBox;
 
 	public Player(GamePanel gp, KeyHandler keyH) {
+		super(gp);
 		this.gp = gp;
 		this.keyH = keyH;
 
@@ -50,7 +57,7 @@ public class Player extends Entity implements Drawable{
 		//Note: coordinates are based on the image center
 		worldx = 0;
 		worldy = 0;
-		speed = 10; //amount pixels moved
+		speed = originalSpeed; //amount pixels moved
 		direction = "down";
 		collisionBox = new Rectangle(0, 0, 0, 0);
 	}
@@ -58,16 +65,14 @@ public class Player extends Entity implements Drawable{
 	public void getPlayerImage() {
 		//images for movement, 1 and 2 allow for simple animation loop
 		//buffered in setup
-		up1 = setup("/player/boy_up_1");
-		up2 = setup("/player/boy_up_2");
-		down1 = setup("/player/boy_down_1");
-		down2 = setup("/player/boy_down_2");
-		left1 = setup("/player/boy_left_1");
-		left2 = setup("/player/boy_left_2");
-		right1 = setup("/player/boy_right_1");
-		right2 = setup("/player/boy_right_2");
-
-	}
+		up1 = setup("boy_up_1");
+		up2 = setup("boy_up_2");
+		down1 = setup("boy_down_1");
+		down2 = setup("boy_down_2");
+		left1 = setup("boy_left_1");
+		left2 = setup("boy_left_2");
+		right1 = setup("boy_right_1");
+		right2 = setup("boy_right_2");
 	}
 
 	public BufferedImage setup(String imageName) {
@@ -76,12 +81,11 @@ public class Player extends Entity implements Drawable{
 
 		try {
 			image = ImageIO.read(getClass().getResourceAsStream("/player/" + imageName + ".png"));
-			image = uTool.scaleImage(image, gp.tileSize, gp.tileSize);
+			image = uTool.scaleImage(image, GameConfig.tileSize, GameConfig.tileSize);
 		}catch(IOException e){
 			e.printStackTrace();
 		}
 		return image;
-
 	}
 
 
@@ -99,16 +103,16 @@ public class Player extends Entity implements Drawable{
 				spriteCounter = 0;
 			}
 		}
-		
+
 		if (keyH.upPressed == true) {
-			direction = "up";}	
+			direction = "up";}
 		else if (keyH.downPressed == true) {
 			direction = "down";}
 		else if (keyH.leftPressed == true) {
 			direction = "left";}
 		else if (keyH.rightPressed == true) {
 			direction = "right";}
-		else 
+		else
 			direction = "standing";
 
 		//Collision check
@@ -175,8 +179,9 @@ public class Player extends Entity implements Drawable{
 		Key keys[] = gp.mapGen.getKeys();
 		for (Key k : keys) {
 			if (k.isColliding(collisionBox)) {
+				//TODO: sound
 				hasKeys++;
-				gp.ui.showMessage("You got a key!");
+				gp.ui.showMessage(String.format("Keys: %d/%d", hasKeys, gp.keyCount));
 				gp.mapGen.removeKey(k);
 				return;
 			}
@@ -185,14 +190,15 @@ public class Player extends Entity implements Drawable{
 		//Door
 		if (door.isColliding(collisionBox)) {
 			if (hasKeys == gp.keyCount)
-				gp.ui.showMessage("You won!");
+				//TODO: play sound
+				gp.gameState = gp.completeState;
 			else
 				gp.ui.showMessage("\"I don't have enough keys...\"");
 		}
 		//Update camera position
 		Camera.updateCameraPos();
 	}
-	
+
 	public void draw(Graphics2D g2) {
 		BufferedImage image = null;
 		switch (direction) {
@@ -224,6 +230,5 @@ public class Player extends Entity implements Drawable{
 			image = down1;
 		}
 		g2.drawImage(image, screenX, screenY,null);
-		g2.setColor(Color.WHITE);
 	}
 }
