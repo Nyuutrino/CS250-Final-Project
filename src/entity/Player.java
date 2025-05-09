@@ -176,7 +176,7 @@ public class Player extends Entity implements Drawable{
 		//Now check for collisions with objects
 
 		//Keys
-		Key keys[] = gp.mapGen.getKeys();
+		Key[] keys = gp.mapGen.getKeys();
 		for (Key k : keys) {
 			if (k.isColliding(collisionBox)) {
 				//TODO: sound
@@ -195,6 +195,12 @@ public class Player extends Entity implements Drawable{
 			else
 				gp.ui.showMessage("\"I don't have enough keys...\"");
 		}
+
+		//Enemy
+		if (gp.enemy.isColliding(collisionBox)) {
+			gp.gameState = gp.lossState;
+		}
+
 		//Update camera position
 		Camera.updateCameraPos();
 	}

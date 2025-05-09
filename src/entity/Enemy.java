@@ -5,6 +5,7 @@
  */
 package entity;
 
+import barrier.Collidable;
 import camera.Camera;
 import game.GameConfig;
 import main.GamePanel;
@@ -15,7 +16,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class Enemy extends Entity {
+public class Enemy extends Entity implements Collidable {
+	//Used to detect collision
+	private Rectangle collisionBox;
 	public Enemy (GamePanel gp) {
 		super(gp);
 		solidArea = new Rectangle();
@@ -30,8 +33,9 @@ public class Enemy extends Entity {
 
 	public void setDefaultValues() {
 		//Note: coordinates are based on the image center
-		worldx = GameConfig.maxWorldCol * GameConfig.tileSize - GameConfig.tileSize * 2;
-		worldy = GameConfig.maxWorldRow * GameConfig.tileSize - GameConfig.tileSize * 2;
+		worldx = GameConfig.maxWorldCol * GameConfig.tileSize;
+		worldy = GameConfig.maxWorldRow * GameConfig.tileSize;
+		collisionBox = new Rectangle(GameConfig.maxWorldCol * GameConfig.tileSize - solidArea.width / 2, GameConfig.maxWorldRow * GameConfig.tileSize - solidArea.width / 2, solidArea.width, solidArea.height);
 	}
 
 	public void getPlayerImage() {
@@ -78,6 +82,7 @@ public class Enemy extends Entity {
 		//Move the enemy
 		worldx += x;
 		worldy += y;
+		collisionBox.translate(x, y);
 	}
 
 	public void draw(Graphics2D g2) {
@@ -111,6 +116,15 @@ public class Enemy extends Entity {
 				image = down1;
 		}
 		Camera.drawImage(image, worldx - solidArea.width / 2, worldy - solidArea.height / 2, solidArea.width, solidArea.height, g2);
-//		System.out.printf("Pos: (%d, %d)\n", worldx, worldy);
+	}
+
+	@Override
+	public boolean isColliding(Rectangle rect) {
+		return collisionBox.intersects(rect);
+	}
+
+	@Override
+	public Rectangle getIntersection(Rectangle rect) {
+		return collisionBox.intersection(rect);
 	}
 }
